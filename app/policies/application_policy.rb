@@ -11,15 +11,15 @@ class ApplicationPolicy
   end
 
   def index?
-    false
+    user_and_above?
   end
 
   def show?
-    false
+    user_and_above?
   end
 
   def create?
-    false
+    user_and_above?
   end
 
   def new?
@@ -27,7 +27,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    user_and_above?
   end
 
   def edit?
@@ -35,7 +35,35 @@ class ApplicationPolicy
   end
 
   def destroy?
-    false
+    user_and_above?
+  end
+
+  def self.permit_access_to_all_users(*actions)
+    actions.each do |action|
+      define_method("#{action}?") do
+        user.present?
+      end
+    end
+  end
+
+  def self.permit_access_to_user_and_above(*actions)
+    actions.each do |action|
+      define_method("#{action}?") do
+        user_and_above?
+      end
+    end
+  end
+
+  def self.permit_conditional_access(actions, options)
+    actions.each do |action|
+      define_method("#{action}?") do
+        public_send(options[:if])
+      end
+    end
+  end
+
+  def user_and_above?
+    user.user? || user.admin?
   end
 
   def self.permit_access(*actions)
@@ -60,6 +88,10 @@ class ApplicationPolicy
 
       @user = user
       @scope = scope
+    end
+
+    def user_and_above?
+      ApplicationPolicy.new(user, nil).user_and_above?
     end
 
     def resolve
