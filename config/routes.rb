@@ -5,6 +5,6 @@ Rails.application.routes.draw do
   resources :leave_requests
   resources :users
   root "home#app"
-  get "*path" => redirect("/")
+  match '*path', to: 'home#app', via: :all
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end
