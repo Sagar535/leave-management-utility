@@ -10,7 +10,7 @@ class LeaveRequestsController < ApplicationController
     else
       @leave_requests = LeaveRequest.where(user_id: current_user.id)
     end
-    options = { include: %i[user] }
+    options = { include: %i[user reply] }
     render json: LeaveRequestSerializer.new(@leave_requests, options).serialized_json
   end
 
@@ -31,7 +31,7 @@ class LeaveRequestsController < ApplicationController
 
   def update
     if @leave_request.update(leave_request_params)
-      options = { include: %i[user] }
+      options = { include: %i[user reply] }
       render json: LeaveRequestSerializer.new(@leave_request, options).serialized_json
     else
       render json: @leave_request.errors, status: :unprocessable_entity
@@ -45,6 +45,9 @@ class LeaveRequestsController < ApplicationController
     authorize @leave_request
   end
   def leave_request_params
-    params.require(:leave_request).permit(:title, :start, :end_date, :status, :leave_type, :approver_id)
+    params.require(:leave_request).permit(
+      :title, :start, :end_date, :status, :leave_type, :approver_id,
+      reply_attributes: [:id, :reason]
+      )
   end
 end
