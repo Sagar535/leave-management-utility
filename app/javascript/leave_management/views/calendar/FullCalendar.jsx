@@ -91,6 +91,8 @@ class FullCalendar extends React.Component {
           eventId: event.id,
           eventTitle: event.title,
           leaveType: event.extendedProps.leave_type,
+          reply: event.extendedProps.reply ? event.extendedProps.reply.reason : '',
+          replyId: event.extendedProps.reply ? event.extendedProps.reply.id : '',
           eventStatus: event.extendedProps.status,
           userName: event.extendedProps.user.first_name + ' ' + event.extendedProps.user.last_name,
           radios: "bg-info",
@@ -163,7 +165,12 @@ class FullCalendar extends React.Component {
     const postData = {
       title: this.state.eventTitle,
       status: this.state.eventStatus,
-      leave_type: this.state.leaveType
+      leave_type: this.state.leaveType,
+      approver_id: this.props.globalState.userData.id,
+      reply_attributes: {
+        id: this.state.replyId,
+        reason: this.state.reply
+      }
     };
     apiCall.submitEntity( postData, `/leave_requests/${id}.json`, "patch")
       .then((res) => {
@@ -370,6 +377,14 @@ class FullCalendar extends React.Component {
               </FormGroup>
               {this.state.updateLeaveRequest && this.isAdmin() && (
                 <FormGroup>
+                  <label className="form-control-label">Reason</label>
+                  <Input
+                      className="form-control-alternative edit-event--title"
+                      placeholder="Reply"
+                      type="text"
+                      defaultValue={this.state.reply}
+                      onKeyUp={(e) =>this.setState({reply: e.target.value})}
+                  />
                   <label className="form-control-label d-block mb-3 text-capitalize">
                     Status - {this.state.eventStatus}
                   </label>
