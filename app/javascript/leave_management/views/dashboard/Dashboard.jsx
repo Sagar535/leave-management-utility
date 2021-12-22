@@ -14,6 +14,8 @@ export default function Dashboard(props) {
   const [events, setEvents] = useState([]);
   const [updateLeaveRequest, setUpdateLeaveRequest] = useState(false)
   const [leaveTitle, setLeaveTitle] = useState('')
+  const [reply, setReply] = useState('')
+  const [replyId, setReplyId] = useState(undefined)
   const [approved, setApproved] = useState(false)
   const [rejected, setRejected] = useState(false)
   const [leaveRequestId, setLeaveRequestId] = useState(undefined)
@@ -37,8 +39,14 @@ export default function Dashboard(props) {
 
   const handleActions = (status, id) => {
     const postData = {
-      status,
-      approver_id: props.globalState.userData.id,
+        leave_request: {
+            status,
+            approver_id: props.globalState.userData.id,
+            reply_attributes: {
+                id: replyId,
+                reason: reply
+            }
+        }
     };
 
     apiCall.submitEntity( postData, `/leave_requests/${id}.json`, "patch")
@@ -62,13 +70,13 @@ export default function Dashboard(props) {
          return isAdmin() && {
             onClick: e => {
                 // no need to go through all this, if admin is using the right actions button to handle reject or approve
-                if (e.target.closest('.actions-right') === null) {
-                    setUpdateLeaveRequest(true)
-                    setApproved(rowInfo.original.status === 'approved')
-                    setRejected(rowInfo.original.status === 'rejected')
-                    setLeaveRequestId(rowInfo.original.id)
-                    setLeaveTitle(rowInfo.original.title)
-                }
+                setUpdateLeaveRequest(true)
+                setApproved(rowInfo.original.status === 'approved')
+                setRejected(rowInfo.original.status === 'rejected')
+                setLeaveRequestId(rowInfo.original.id)
+                setLeaveTitle(rowInfo.original.title)
+                setReplyId(rowInfo.original.reply.id)
+                setReply(rowInfo.original.reply.reason)
             }
         }
     }
@@ -219,6 +227,15 @@ export default function Dashboard(props) {
                     type="text"
                     defaultValue={leaveTitle}
                     disabled
+                />
+
+                <label className="form-control-label">Reason</label>
+                <Input
+                    className="form-control-alternative edit-event--title"
+                    placeholder="Reply"
+                    type="text"
+                    defaultValue={reply}
+                    onKeyUp={(e) => setReply(e.target.value)}
                 />
                 <br/>
 
