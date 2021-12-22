@@ -1,6 +1,7 @@
 class LeaveRequest < ApplicationRecord
   belongs_to :user
   belongs_to :approver, class_name: 'User', foreign_key: :approver_id, optional: true
+  has_one :reply
   enum status: { pending: 0, approved: 1, rejected: 2 }
   enum leave_type: { sick_leave: 0, personal: 1, others: 2 }
 
@@ -10,6 +11,8 @@ class LeaveRequest < ApplicationRecord
   # validate same user can't create leave for same day with multiple reasons
   validate :prevent_multiple_leave_on_same_day
   validate :approver_exists, if: -> { status != 'pending' }
+
+  accepts_nested_attributes_for :reply
 
   scope :upcoming_leaves,  -> { where('start > ?', Date.today) }
 
