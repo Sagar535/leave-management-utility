@@ -1,11 +1,9 @@
 class UsersController < ApplicationController
   require 'csv'
   skip_before_action :verify_authenticity_token
-  before_action -> { authorize_class(User) }, only: %i[index new create]
+  before_action -> { authorize_class(User) }, only: %i[index new create create_users]
   before_action :set_user, only: %i[show edit update destroy]
 
-  # GET /users
-  # GET /users.json
   def index
     unless current_user.admin?
       render json: {error: 'You are not authorized to view this page'}

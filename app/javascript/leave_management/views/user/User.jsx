@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Button,
-  Badge,
-  Table,
-  Card, CardBody, CardHeader, Nav, Row, Col, Modal, Input,
+    Button,
+    FormGroup,
+    Badge,
+    Table,
+    Label,
+    FormText,
+    Card, CardBody, CardHeader, Nav, Row, Col, Modal, Input, Form,
 } from 'reactstrap';
+import ReactTable from "../../components/ReactTable/ReactTable";
 import Jsona from 'jsona';
-import ReactTable from '../../components/ReactTable/ReactTable';
 import apiCall from '../../helpers/apiCall';
 import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 
 export default function User(props) {
-  const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([])
+    const [importUser, setImportUser] = useState(false)
 
   const isAdmin = () => props.globalState.userData.role === 'admin';
   useEffect(() => {
@@ -36,8 +40,26 @@ export default function User(props) {
 
       <CardBody className="mt--6">
         <div className="bg-white shadow-lg p-5 pb-7" style={{ borderRadius: 5 }}>
-          <Row className="flex-row-reverse mb-3">
-                            <Button className="btn btn-success float-end" size="sm">Import User</Button>
+          <Form
+                            id="user"
+                            action="/create_users"
+                            method="POST"
+                            encType="multipart/form-data"
+                        >
+                            <Input
+                                type="file"
+                                name="userFile"
+                                id="userFile"
+                                onChange={() => document.getElementById("user").submit()}
+                                style={{display: 'none'}}
+                            />
+                        </Form>
+                        <Row className="flex-row-reverse mb-3">
+                            <Button
+                                className="btn btn-success float-end"
+                                size="sm"
+                                onClick={() => { document.getElementById('userFile').click() }}
+                            >Import User</Button>
                         </Row>
         <ReactTable
             resizable={false}
