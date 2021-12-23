@@ -1,11 +1,17 @@
 class UsersController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action -> { authorize_class(User) }, only: %i[index new create]
   before_action :set_user, only: %i[show edit update destroy]
 
   # GET /users
   # GET /users.json
   def index
-    @users = User.all
+    unless current_user.admin?
+      render json: {error: 'You are not authorized to view this page'}
+    else
+      @users = User.all
+      render json: UserSerializer.new(@users).serialized_json
+    end
   end
 
   # GET /users/1
