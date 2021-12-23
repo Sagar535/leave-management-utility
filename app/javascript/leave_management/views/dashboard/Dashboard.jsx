@@ -9,7 +9,7 @@ import Jsona from 'jsona';
 import ReactTable from '../../components/ReactTable/ReactTable';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
-import BreadCrumbLayout from "../../components/BreadCrumbLayout/BreadCrumbLayout";
+import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 
 export default function Dashboard(props) {
   const [events, setEvents] = useState([]);
@@ -85,9 +85,10 @@ export default function Dashboard(props) {
       <Card className="shadow mb-0">
         <CardHeader className="border-0 text-white bg-primary pb-6 px-5">
           <Row className="pt-4">
-              <BreadCrumbLayout
-                title = 'Dashboard'
-              />
+            <BreadCrumbLayout
+              title="Dashboard"
+              isAdmin={isAdmin()}
+            />
           </Row>
         </CardHeader>
         <CardBody className="mt--6">

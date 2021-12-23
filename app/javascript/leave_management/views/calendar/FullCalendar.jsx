@@ -12,7 +12,7 @@ import Jsona from 'jsona';
 import ConfirmationDeleteAlert from '../../components/Alert/ConfirmationDeleteAlert';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
-import BreadCrumbLayout from "../../components/BreadCrumbLayout/BreadCrumbLayout";
+import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 
 let calendar;
 const statusColorMap = {
@@ -48,7 +48,9 @@ class FullCalendar extends React.Component {
             end_date = (`${end_date.getFullYear()}-${(`0${end_date.getMonth() + 1}`).slice(-2)}-${(`0${end_date.getDate()}`).slice(-2)}`);
           }
 
-          return ({ ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date });
+          return ({
+            ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date,
+          });
         });
         this.setState({
           events,
@@ -138,7 +140,9 @@ class FullCalendar extends React.Component {
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
         const newEvents = [...events, { ...data, className: statusColorMap[data.status] }];
-        calendar.addEvent({ ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date });
+        calendar.addEvent({
+          ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date,
+        });
         this.setState({
           events: newEvents,
           createLeaveRequest: false,
@@ -247,8 +251,9 @@ class FullCalendar extends React.Component {
           <CardHeader className="bg-primary pb-5 px-5">
             <Row className="align-items-center py-4">
               <BreadCrumbLayout
-                  title={this.state.currentDate}
-                  date={this.state.currentDate}
+                title={this.state.currentDate}
+                date={this.state.currentDate}
+                isAdmin={this.isAdmin()}
               />
               <Col className="mt-3 mt-lg-0 text-lg-right" lg="6">
                 <Button

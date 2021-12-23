@@ -11,4 +11,8 @@ class User < ApplicationRecord
   def upcoming_leaves
     leave_requests.where("end_date > ?", Time.zone.today)
   end
+
+  def leave_request_days_count
+    leave_requests.map(&:duration).reduce(:+)
+  end
 end
