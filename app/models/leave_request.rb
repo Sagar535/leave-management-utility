@@ -28,6 +28,7 @@ class LeaveRequest < ApplicationRecord
 
   def approver_exists
     self.errors.add :approver, 'Approver must be present' unless approver.present?
+    self.errors.add :approver, 'Approver must be admin' unless approver.admin?
   end
 
   # Check if a given interval overlaps this interval    
