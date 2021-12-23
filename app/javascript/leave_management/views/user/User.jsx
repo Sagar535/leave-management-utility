@@ -36,7 +36,10 @@ export default function User(props) {
 
       <CardBody className="mt--6">
         <div className="bg-white shadow-lg p-5 pb-7" style={{ borderRadius: 5 }}>
-          <ReactTable
+          <Row className="flex-row-reverse mb-3">
+                            <Button className="btn btn-success float-end" size="sm">Import User</Button>
+                        </Row>
+        <ReactTable
             resizable={false}
             data={users}
             loading={false}
