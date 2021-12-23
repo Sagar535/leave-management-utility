@@ -12,6 +12,7 @@ import Jsona from 'jsona';
 import ConfirmationDeleteAlert from '../../components/Alert/ConfirmationDeleteAlert';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
+import BreadCrumbLayout from "../../components/BreadCrumbLayout/BreadCrumbLayout";
 
 let calendar;
 const statusColorMap = {
@@ -245,18 +246,10 @@ class FullCalendar extends React.Component {
         <Card className="card-calendar mb-0">
           <CardHeader className="bg-primary pb-5 px-5">
             <Row className="align-items-center py-4">
-              <Col lg="6">
-                <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0 mr-1">
-                  {this.state.currentDate}
-                </h6>
-                <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
-                  <ol className="breadcrumb breadcrumb-links breadcrumb-dark">
-                    <li className="breadcrumb-item"><i className="fas fa-home" /></li>
-                    <li className="breadcrumb-item" onClick={() => this.props.history.push('/admin/dashboard')}>Dashboard</li>
-                    <li className="breadcrumb-item active" aria-current="page">Calendar</li>
-                  </ol>
-                </Nav>
-              </Col>
+              <BreadCrumbLayout
+                  title={this.state.currentDate}
+                  date={this.state.currentDate}
+              />
               <Col className="mt-3 mt-lg-0 text-lg-right" lg="6">
                 <Button
                   className="fullcalendar-btn-prev btn-neutral"
