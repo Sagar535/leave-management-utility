@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  require 'csv'
   skip_before_action :verify_authenticity_token
   before_action -> { authorize_class(User) }, only: %i[index new create]
   before_action :set_user, only: %i[show edit update destroy]
@@ -63,6 +64,21 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
       format.json { head :no_content }
+    end
+  end
+
+  def create_users
+    if File.extname(params[:userFile]) != ".csv"
+      render 'home/app', locals: { path: '/admin/users', error: 'Please import file with csv extension.' }
+    else
+      csv_text = File.read(params[:userFile])
+      csv = CSV.parse(csv_text, :headers => true)
+      csv.each do |row|
+        user = User.find_by(email: row.to_hash["email"])
+        User.create!(row.to_hash) unless user.present?
+      end
+
+      redirect_back fallback_location: '/'
     end
   end
 
