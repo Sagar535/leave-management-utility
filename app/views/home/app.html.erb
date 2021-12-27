@@ -15,10 +15,10 @@
                   id: "error_data",
                   data: error do %>
   <% end %>
-<% else %>
+<% elsif local_assigns.has_key? :success %>
   <%= content_tag :div,
-                  id: "error_data",
-                  data: {} do %>
+                  id: "success_data",
+                  data: success do %>
   <% end %>
 <% end %>
 

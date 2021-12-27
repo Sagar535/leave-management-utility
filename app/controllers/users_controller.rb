@@ -71,12 +71,16 @@ class UsersController < ApplicationController
     else
       csv_text = File.read(params[:userFile])
       csv = CSV.parse(csv_text, :headers => true)
+      imported_count = 0
       csv.each do |row|
         user = User.find_by(email: row.to_hash["email"])
-        User.create!(row.to_hash) unless user.present?
+        unless user.present?
+          User.create!(row.to_hash)
+          imported_count += 1
+        end
       end
 
-      redirect_back fallback_location: '/'
+      render 'home/app', locals: { path: '/admin/users', success: "Successfully imported #{imported_count} data." }
     end
   end
 

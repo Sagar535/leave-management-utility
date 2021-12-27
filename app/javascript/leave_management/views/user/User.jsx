@@ -29,11 +29,19 @@ export default function User(props) {
 
     // check if error message is present
     const error_node = document.getElementById('error_data');
-    const error_data = error_node.getAttribute('data') || {};
+    const error_data = error_node && error_node.getAttribute('data') || {};
 
-    // don't notify if no error data, when globalState is not set, when notification ref is not set
+    // check if success message is present
+    const success_node = document.getElementById('success_data');
+    const success_data = success_node && success_node.getAttribute('data') || {};
+
+    // don't notify if no message, when globalState is not set, when notification ref is not set
     if (Object.keys(error_data).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
       NotifyUser(error_data, 'bc', 'danger', props.globalState.notificationRef);
+    }
+
+    if (Object.keys(success_data).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
+      NotifyUser(success_data, 'bc', 'success', props.globalState.notificationRef);
     }
   }, [props.globalState.notificationRef]); // trigger useEffect when props.globalState.notificationRef changes
 
