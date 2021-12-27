@@ -9,8 +9,7 @@ import LeaveManagementInit from './LeaveManagementInit';
 import history from './history';
 import AdminLayout from './layouts/Admin';
 
-
-export default function LeaveManagementApp({ data , path}) {
+export default function LeaveManagementApp({ data, path }) {
   const notificationAlertRef = React.useRef(null);
 
   return (
@@ -22,17 +21,16 @@ export default function LeaveManagementApp({ data , path}) {
         <Router history={history}>
           <Switch>
             <Route
-                path="/admin"
-                render={(props) => {
-                    return (
-                        <LeaveManagementInit
-                            userData={data}
-                            notificationAlertRef={notificationAlertRef}
-                        >
-                            <AdminLayout />
-                        </LeaveManagementInit>
-                    )
-                }} />
+              path="/admin"
+              render={(props) => (
+                <LeaveManagementInit
+                  userData={data}
+                  notificationAlertRef={notificationAlertRef}
+                >
+                  <AdminLayout />
+                </LeaveManagementInit>
+              )}
+            />
             <Redirect from="/" to={path} />
           </Switch>
         </Router>
