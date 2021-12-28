@@ -1,4 +1,6 @@
 class HomeController < ApplicationController
-  skip_before_action :authenticate_user!
-  before_action :skip_authorization
+  before_action :skip_authorization, only: [:app]
+
+  def app
+  end
 end
