@@ -16,7 +16,6 @@ const getHeaders = () => {
   return headers;
 };
 
-
 function isArray(a) {
   return Array.isArray(a);
 }
@@ -40,7 +39,7 @@ const keysToSnake = (o, depth = 2) => {
     return o.map((i) => keysToSnake(i, depth - 1));
   }
   return o;
-}
+};
 
 export default {
   /**

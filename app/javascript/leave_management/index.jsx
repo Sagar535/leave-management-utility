@@ -9,7 +9,6 @@ import LeaveManagementInit from './LeaveManagementInit';
 import history from './history';
 import AdminLayout from './layouts/Admin';
 
-
 export default function LeaveManagementApp({ data }) {
   const notificationAlertRef = React.useRef(null);
 
@@ -28,4 +27,4 @@ export default function LeaveManagementApp({ data }) {
       </StoreProvider>
     </>
   );
-};
+}

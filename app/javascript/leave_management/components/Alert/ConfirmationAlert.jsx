@@ -51,6 +51,6 @@ ConfirmationAlert.propTypes = {
 };
 
 ConfirmationAlert.defaultProps = {
-  successMessage: "Success!",
+  successMessage: 'Success!',
   handleConfirm: () => 1,
 };

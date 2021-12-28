@@ -15,17 +15,19 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { useEffect, useContext } from "react";
-import { useLocation, Route, Switch, Redirect } from "react-router-dom";
+import React, { useEffect, useContext } from 'react';
+import {
+  useLocation, Route, Switch, Redirect,
+} from 'react-router-dom';
 // reactstrap components
-import { Container } from "reactstrap";
+import { Container } from 'reactstrap';
 // core components
-import AdminNavbar from "../components/Navbars/AdminNavbar";
-import Footer from "../components/Footers/Footer";
+import AdminNavbar from '../components/Navbars/AdminNavbar';
+import Footer from '../components/Footers/Footer';
 import Store from '../Store';
-import routes from "../routes.js";
+import routes from '../routes.js';
 
-const Admin = (props) => {
+const Admin = function (props) {
   const mainContent = React.useRef(null);
   const location = useLocation();
   const { globalState } = useContext(Store);
@@ -38,45 +40,41 @@ const Admin = (props) => {
   }, [location]);
 
   const getRoutes = () => routes.map((prop, key) => {
-    if (prop.layout === "/admin") {
+    if (prop.layout === '/admin') {
       return (
         <Route
           path={prop.layout + prop.path}
           key={key}
-          render={(props) => <prop.component globalState={globalState} {...props} />} 
+          render={(props) => <prop.component globalState={globalState} {...props} />}
         />
       );
-    } else {
-      return null;
     }
+    return null;
   });
 
   const getBrandText = (path) => {
     for (let i = 0; i < routes.length; i++) {
       if (
-        window.location.pathname.indexOf(routes[i].layout + routes[i].path) !==
-        -1
+        window.location.pathname.indexOf(routes[i].layout + routes[i].path)
+        !== -1
       ) {
         return routes[i].name;
       }
     }
-    return "Brand";
+    return 'Brand';
   };
 
-
   return (
-    <>
-      <div className="main-content" ref={mainContent}>
-        <AdminNavbar
-          {...props}
-          brandText={getBrandText(window.location.pathname)}
-        />
-         <Switch>
-          {getRoutes(routes)}
-        </Switch>
-        {/* <Footer /> */}
-      </div>
-    </>
+    <div className="main-content" ref={mainContent}>
+      <AdminNavbar
+        {...props}
+        brandText={getBrandText(window.location.pathname)}
+      />
+      <Switch>
+        {getRoutes(routes)}
+      </Switch>
+      {/* <Footer /> */}
+    </div>
   );
 };
 

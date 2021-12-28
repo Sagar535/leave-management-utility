@@ -15,23 +15,23 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import FullCalendar from "./views/calendar/FullCalendar";
-import Dashboard from "./views/dashboard/Dashboard";
+import FullCalendar from './views/calendar/FullCalendar';
+import Dashboard from './views/dashboard/Dashboard';
 
-var routes = [
+const routes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    icon: "ni ni-tv-2 text-primary",
+    path: '/dashboard',
+    name: 'Dashboard',
+    icon: 'ni ni-tv-2 text-primary',
     component: Dashboard,
-    layout: "/admin",
+    layout: '/admin',
   },
   {
-    path: "/calendar",
-    name: "Calendar",
-    icon: "ni ni-tv-2 text-primary",
+    path: '/calendar',
+    name: 'Calendar',
+    icon: 'ni ni-tv-2 text-primary',
     component: FullCalendar,
-    layout: "/admin",
+    layout: '/admin',
   },
 ];
 export default routes;
