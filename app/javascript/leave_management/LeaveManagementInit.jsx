@@ -5,8 +5,7 @@ import {
   setUserData, setNotificationRef,
 } from './Actions';
 
-
-function LeaveManagementInit({ userData, children, notificationAlertRef }) {
+const LeaveManagementInit = function ({ userData, children, notificationAlertRef }) {
   const { dispatch } = useStoreContext();
 
   useEffect(
@@ -22,7 +21,7 @@ function LeaveManagementInit({ userData, children, notificationAlertRef }) {
       {children}
     </>
   );
-}
+};
 export default LeaveManagementInit;
 
 LeaveManagementInit.propTypes = {

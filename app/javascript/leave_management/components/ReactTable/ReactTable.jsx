@@ -25,4 +25,3 @@ export default function ReactTable(props) {
 ReactTable.propTypes = {
   loading: PropTypes.bool.isRequired,
 };
-

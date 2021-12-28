@@ -19,7 +19,7 @@ function reducer(state, action) {
   }
 }
 
-export function StoreProvider(props) {
+export var StoreProvider = function (props) {
   const [globalState, dispatch] = React.useReducer(reducer, initialState);
   const value = { globalState, dispatch };
   const { children } = props;
@@ -29,7 +29,7 @@ export function StoreProvider(props) {
       {children}
     </Store.Provider>
   );
-}
+};
 
 const Store = React.createContext();
 export default Store;

@@ -1,23 +1,23 @@
-import React from "react";
-import { 
+import React from 'react';
+import {
   Button, ButtonGroup, Card, CardHeader, CardBody, Container,
   FormGroup, Form, Input, Modal, Row, Col, Nav, Label,
-} from "reactstrap";
+} from 'reactstrap';
 import dayjs from 'dayjs';
 // JavaScript library that creates a callendar with events
-import { Calendar } from "@fullcalendar/core";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interaction from "@fullcalendar/interaction";
-import ConfirmationDeleteAlert from "../../components/Alert/ConfirmationDeleteAlert";
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interaction from '@fullcalendar/interaction';
 import Jsona from 'jsona';
+import ConfirmationDeleteAlert from '../../components/Alert/ConfirmationDeleteAlert';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
 
 let calendar;
 const statusColorMap = {
-  pending: "bg-info",
-  approved: "bg-success",
-  rejected: "bg-danger",
+  pending: 'bg-info',
+  approved: 'bg-success',
+  rejected: 'bg-danger',
 };
 
 class FullCalendar extends React.Component {
@@ -26,10 +26,10 @@ class FullCalendar extends React.Component {
     alert: null,
     errors: {},
     errorMessages: [],
-    leaveType: 'sick_leave'
+    leaveType: 'sick_leave',
   };
 
-  isAdmin = () => this.props.globalState.userData.role === "admin";
+  isAdmin = () => this.props.globalState.userData.role === 'admin';
 
   componentDidMount() {
     apiCall.fetchEntities('/leave_requests.json')
@@ -37,51 +37,49 @@ class FullCalendar extends React.Component {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const events = data.map((el) => {
-          //first find out if the event is multi day or single day
+          // first find out if the event is multi day or single day
           // if multiday then add a day to the end date
-          let end_date = el.end_date
-          if(el.start !== el.end_date) {
-            end_date = new Date(end_date)
-            end_date.setDate(end_date.getDate() + 1)
-            end_date.toLocaleString()
-            end_date = (end_date.getFullYear()+'-'+(end_date.getMonth() + 1)+'-'+end_date.getDate())
+          let { end_date } = el;
+          if (el.start !== el.end_date) {
+            end_date = new Date(end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            end_date.toLocaleString();
+            end_date = (`${end_date.getFullYear()}-${end_date.getMonth() + 1}-${end_date.getDate()}`);
           }
 
-          return ({...el, className: statusColorMap[el.status], end: end_date})
-        })
+          return ({ ...el, className: statusColorMap[el.status], end: end_date });
+        });
         this.setState({
-          events: events,
+          events,
         });
         this.createCalendar(events);
       });
-  };
+  }
 
   createCalendar = (events) => {
     calendar = new Calendar(this.refs.calendar, {
       plugins: [interaction, dayGridPlugin],
-      headerToolbar:false,
+      headerToolbar: false,
       selectable: true,
       editable: true,
-      events: events,
+      events,
       initialView: 'dayGridMonth',
       eventDisplay: 'auto',
       displayEventEnd: true,
       // selectable dates
-      selectAllow: (selectInfo) => {
-        return dayjs().diff(selectInfo.start)/86400000 <= 1;
-      },
+      selectAllow: (selectInfo) => dayjs().diff(selectInfo.start) / 86400000 <= 1,
       // Add new event
-      select: info => {
+      select: (info) => {
         // end date should be the last day of the leave, better not include the present day
-        let endDate = new Date(info.endStr)
-        endDate.setDate(endDate.getDate() -1)
-        endDate.toLocaleString()
+        const endDate = new Date(info.endStr);
+        endDate.setDate(endDate.getDate() - 1);
+        endDate.toLocaleString();
 
         this.setState({
           createLeaveRequest: true,
           startDate: info.startStr,
-          endDate: endDate,
-          radios: "bg-info"
+          endDate,
+          radios: 'bg-info',
         });
       },
       // Edit calendar event action
@@ -94,34 +92,34 @@ class FullCalendar extends React.Component {
           reply: event.extendedProps.reply ? event.extendedProps.reply.reason : '',
           replyId: event.extendedProps.reply ? event.extendedProps.reply.id : '',
           eventStatus: event.extendedProps.status,
-          userName: event.extendedProps.user.first_name + ' ' + event.extendedProps.user.last_name,
-          radios: "bg-info",
-          event: event,
+          userName: `${event.extendedProps.user.first_name} ${event.extendedProps.user.last_name}`,
+          radios: 'bg-info',
+          event,
         });
-      }
+      },
     });
     calendar.render();
     this.setState({
-      currentDate: calendar.view.title
+      currentDate: calendar.view.title,
     });
   };
 
-  changeView = newView => {
+  changeView = (newView) => {
     calendar.changeView(newView);
     this.setState({
-      currentDate: calendar.view.title
+      currentDate: calendar.view.title,
     });
   };
 
-  //expect error to be of format {leave: Array(1)}
+  // expect error to be of format {leave: Array(1)}
   generateErrorMessage = (errors) => {
-    let errorMessages = []
+    const errorMessages = [];
     Object.keys(errors).forEach((key) => {
-      errorMessages.push(`${key} ${errors[key][0]}`)
-    })
+      errorMessages.push(`${key} ${errors[key][0]}`);
+    });
 
-    return errorMessages
-  }
+    return errorMessages;
+  };
 
   addNewEvent = () => {
     const postData = {
@@ -129,33 +127,33 @@ class FullCalendar extends React.Component {
         title: this.state.eventTitle,
         start: this.state.startDate,
         end_date: this.state.endDate,
-        status: "pending",
-        leave_type: this.state.leaveType
-      }
+        status: 'pending',
+        leave_type: this.state.leaveType,
+      },
     };
     apiCall.submitEntity(postData, '/leave_requests.json')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
-        const newEvents = [...events, {...data, className: statusColorMap[data.status]}];
-        calendar.addEvent({...data, className: statusColorMap[data.status]});
+        const newEvents = [...events, { ...data, className: statusColorMap[data.status] }];
+        calendar.addEvent({ ...data, className: statusColorMap[data.status] });
         this.setState({
           events: newEvents,
           createLeaveRequest: false,
           startDate: undefined,
           endDate: undefined,
-          radios: "bg-info",
+          radios: 'bg-info',
           eventTitle: undefined,
-          leave_type: 'sick_leave'
+          leave_type: 'sick_leave',
         });
         this.resetToDefaultState();
       })
       .catch((error) => {
         this.setState({
           errors: error.response.data,
-          errorMessages: this.generateErrorMessage(error.response.data)
-        })
+          errorMessages: this.generateErrorMessage(error.response.data),
+        });
       });
   };
 
@@ -169,30 +167,30 @@ class FullCalendar extends React.Component {
       approver_id: this.props.globalState.userData.id,
       reply_attributes: {
         id: this.state.replyId,
-        reason: this.state.reply
-      }
+        reason: this.state.reply,
+      },
     };
-    apiCall.submitEntity( postData, `/leave_requests/${id}.json`, "patch")
+    apiCall.submitEntity(postData, `/leave_requests/${id}.json`, 'patch')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
         const newEvents = events.map((el) => {
-          if(el.id.toString() === id) {
-            el = {...data, className: statusColorMap[data.status]};
+          if (el.id.toString() === id) {
+            el = { ...data, className: statusColorMap[data.status] };
           }
           return el;
         });
         this.setState({
           updateLeaveRequest: false,
           events: newEvents,
-          radios: "bg-info",
+          radios: 'bg-info',
           eventTitle: undefined,
           eventId: undefined,
           event: undefined,
-          leaveType: 'sick_leave'
+          leaveType: 'sick_leave',
         });
-        NotifyUser(`Successfully updated`, 'bc', 'success', this.props.globalState.notificationRef);
+        NotifyUser('Successfully updated', 'bc', 'success', this.props.globalState.notificationRef);
         this.createCalendar(newEvents);
       });
   };
@@ -204,10 +202,10 @@ class FullCalendar extends React.Component {
         const newEvents = events.filter((el) => el.id.toString() !== id);
         this.setState({
           events: newEvents,
-          radios: "bg-info",
-          eventTitle: undefined, 
+          radios: 'bg-info',
+          eventTitle: undefined,
           eventId: undefined,
-          alert: <ConfirmationDeleteAlert hideAlert={() => this.setState({ alert: false, })} deleted />,
+          alert: <ConfirmationDeleteAlert hideAlert={() => this.setState({ alert: false })} deleted />,
         });
         this.createCalendar(newEvents);
       });
@@ -216,8 +214,8 @@ class FullCalendar extends React.Component {
   deleteEventAlert = () => {
     this.setState({
       alert: (
-        <ConfirmationDeleteAlert deleteMethod={() => this.deleteEvent(this.state.eventId)} hideAlert={() => this.setState({ alert: false, })} />
-      )
+        <ConfirmationDeleteAlert deleteMethod={() => this.deleteEvent(this.state.eventId)} hideAlert={() => this.setState({ alert: false })} />
+      ),
     });
   };
 
@@ -228,18 +226,17 @@ class FullCalendar extends React.Component {
       errors: {},
       errorMessages: [],
       leaveType: 'sick_leave',
-      eventTitle: ''
-    })
-  }
+      eventTitle: '',
+    });
+  };
 
   addOrUpdate = (e) => {
-    if(this.state.updateLeaveRequest) {
-      this.updateEvent(e)
+    if (this.state.updateLeaveRequest) {
+      this.updateEvent(e);
+    } else {
+      this.addNewEvent();
     }
-    else {
-      this.addNewEvent()
-    }
-  }
+  };
 
   render() {
     return (
@@ -267,7 +264,7 @@ class FullCalendar extends React.Component {
                   onClick={() => {
                     calendar.prev();
                     this.setState({
-                      currentDate: calendar.view.title
+                      currentDate: calendar.view.title,
                     });
                   }}
                   size="sm"
@@ -280,20 +277,20 @@ class FullCalendar extends React.Component {
                   onClick={() => {
                     calendar.next();
                     this.setState({
-                      currentDate: calendar.view.title
+                      currentDate: calendar.view.title,
                     });
                   }}
                   size="sm"
                 >
                   <i className="fas fa-angle-right" />
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="month" onClick={() => this.changeView("dayGridMonth")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="month" onClick={() => this.changeView('dayGridMonth')} size="sm">
                   Month
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="basicWeek" onClick={() => this.changeView("dayGridWeek")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="basicWeek" onClick={() => this.changeView('dayGridWeek')} size="sm">
                   Week
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="basicDay" onClick={() => this.changeView("dayGridDay")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="basicDay" onClick={() => this.changeView('dayGridDay')} size="sm">
                   Day
                 </Button>
               </Col>
@@ -309,7 +306,7 @@ class FullCalendar extends React.Component {
             </div>
           </CardBody>
         </Card>
-        
+
         {/* MODAL to create or update existing leave request */}
         <Modal
           isOpen={this.state.updateLeaveRequest || this.state.createLeaveRequest}
@@ -335,30 +332,30 @@ class FullCalendar extends React.Component {
                 </label>
               )
             }
-            
+
             <Form
-              className="edit-event--form" 
-              type="submit" 
-              onSubmit={(e) => { this.addOrUpdate(e) }}
+              className="edit-event--form"
+              type="submit"
+              onSubmit={(e) => { this.addOrUpdate(e); }}
             >
               <FormGroup>
-                <Label for="leaveType" className={'form-control-label'}>
+                <Label for="leaveType" className="form-control-label">
                   Leave Type
                 </Label>
                 <select
-                    id="leaveType"
-                    value={this.state.leaveType}
-                    onChange={ e => this.setState({leaveType: e.target.value}) }
-                    className={'form-control'}
-                    disabled={this.isAdmin() && this.state.updateLeaveRequest}
+                  id="leaveType"
+                  value={this.state.leaveType}
+                  onChange={(e) => this.setState({ leaveType: e.target.value })}
+                  className="form-control"
+                  disabled={this.isAdmin() && this.state.updateLeaveRequest}
                 >
-                  <option value={'sick_leave'}>
+                  <option value="sick_leave">
                     Sick Leave
                   </option>
-                  <option value={'personal'}>
+                  <option value="personal">
                     Personal Leave
                   </option>
-                  <option value={'others'}>
+                  <option value="others">
                     Other
                   </option>
                 </select>
@@ -369,28 +366,28 @@ class FullCalendar extends React.Component {
                   type="text"
                   defaultValue={this.state.eventTitle}
                   disabled={this.isAdmin() && this.state.updateLeaveRequest}
-                  onChange={e =>
-                    this.setState({ eventTitle: e.target.value })
-                  }
+                  onChange={(e) => this.setState({ eventTitle: e.target.value })}
                 />
-                { this.state.errorMessages.map(message => <div className='red-text'>{message}</div>)  }
+                { this.state.errorMessages.map((message) => <div className="red-text">{message}</div>) }
               </FormGroup>
               {this.state.updateLeaveRequest && this.isAdmin() && (
                 <FormGroup>
                   <label className="form-control-label">Reason</label>
                   <Input
-                      className="form-control-alternative edit-event--title"
-                      placeholder="Reply"
-                      type="text"
-                      defaultValue={this.state.reply}
-                      onKeyUp={(e) =>this.setState({reply: e.target.value})}
+                    className="form-control-alternative edit-event--title"
+                    placeholder="Reply"
+                    type="text"
+                    defaultValue={this.state.reply}
+                    onKeyUp={(e) => this.setState({ reply: e.target.value })}
                   />
                   <label className="form-control-label d-block mb-3 text-capitalize">
-                    Status - {this.state.eventStatus}
+                    Status -
+                    {' '}
+                    {this.state.eventStatus}
                   </label>
                   <Button
-                    onClick={() => this.setState({ eventStatus: "approved" })}
-                    disabled={this.state.eventStatus === "approved"}
+                    onClick={() => this.setState({ eventStatus: 'approved' })}
+                    disabled={this.state.eventStatus === 'approved'}
                     color="success"
                     size="sm"
                     className="btn-icon btn-link like"
@@ -402,8 +399,8 @@ class FullCalendar extends React.Component {
                   </label>
                   <br />
                   <Button
-                    onClick={() => this.setState({ eventStatus: "rejected" })}
-                    disabled={this.state.eventStatus === "rejected"}
+                    onClick={() => this.setState({ eventStatus: 'rejected' })}
+                    disabled={this.state.eventStatus === 'rejected'}
                     color="danger"
                     size="sm"
                     className="btn-icon btn-link like"
@@ -419,11 +416,13 @@ class FullCalendar extends React.Component {
           </div>
           <div className="modal-footer">
             <Button color="primary" type="submit" onClick={(e) => this.addOrUpdate(e)}>
-              { this.state.updateLeaveRequest ? 'Update':'Request Leave'}
+              { this.state.updateLeaveRequest ? 'Update' : 'Request Leave'}
             </Button>
-            {this.state.updateLeaveRequest && (<Button color="danger" onClick={() => this.setState({ updateLeaveRequest: false }, () => this.deleteEventAlert())}>
+            {this.state.updateLeaveRequest && (
+            <Button color="danger" onClick={() => this.setState({ updateLeaveRequest: false }, () => this.deleteEventAlert())}>
               Delete
-            </Button>)}
+            </Button>
+            )}
           </div>
         </Modal>
       </>
