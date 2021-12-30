@@ -89,7 +89,7 @@ export default function Dashboard(props) {
                 Leave Requests
               </h6>
               <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
-                <ol className="breadcrumb breadcrumb-links breadcrumb-dark">
+                <ol className="breadcrumb breadcrumb-links breadcrumb-dark" style={{backgroundColor: 'inherit'}}>
                   <li className="breadcrumb-item"><i className="fas fa-home" /></li>
                   <li className="breadcrumb-item active" aria-current="page">Dashboard</li>
                   <li className="breadcrumb-item" onClick={() => props.history.push('/admin/calendar')}>Calendar</li>
