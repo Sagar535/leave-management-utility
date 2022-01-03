@@ -44,7 +44,7 @@ class FullCalendar extends React.Component {
             end_date = new Date(end_date);
             end_date.setDate(end_date.getDate() + 1);
             end_date.toLocaleString();
-            end_date = (`${end_date.getFullYear()}-${end_date.getMonth() + 1}-${end_date.getDate()}`);
+            end_date = (`${end_date.getFullYear()}-${(`0${end_date.getMonth() + 1}`).slice(-2)}-${(`0${end_date.getDate()}`).slice(-2)}`);
           }
 
           return ({ ...el, className: statusColorMap[el.status], end: end_date });
