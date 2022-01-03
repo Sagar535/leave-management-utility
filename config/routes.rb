@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  devise_for :users, skip: [:registrations]
+  devise_for :users, skip: [:registrations], controllers: {
+    sessions: 'users/sessions'
+  }
+  resources :leave_requests
   resources :users
-  root to: "home#index"
+  root "home#app"
+  match '*path', to: 'home#app', via: :all
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

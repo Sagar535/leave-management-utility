@@ -1,10 +1,11 @@
-# rails-react-boilerplate
-Boilerplate app to use rails with react
+# README
+Leave Management Utility
 
 Uses:
 * `devise` for authentication
 * `pundit` for authorization
 * `pronto` for static code analysis
+
 
 * Ruby version
   `2.7.2`
