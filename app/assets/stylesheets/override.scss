@@ -7,49 +7,59 @@
         box-shadow: none;
       }
 
-      .rt-th.-cursor-pointer {
-        &.-sort-asc {
-          box-shadow: none;
-          >div:first-of-type {
-            &:before {
-              opacity: 1;
-            }
-          }
-        }
-        &.-sort-desc {
-          box-shadow: none;
-          >div:first-of-type {
-            &:after {
-              opacity: 1;
-            }
-          }
-        }
-        >div:first-of-type {
-          &:before {
-            right: 1em;
-            content: "\2191";
-            position: absolute;
-            display: block;
-            opacity: 0.3;
-          }
-
-          &:after {
-            right: 0.5em;
-            content: "\2193";
-            top: 0.4em;
-            position: absolute;
-            display: block;
-            opacity: 0.3;
-          }
-        }
-      }
-
       .rt-th {
         text-align: left;
         color: black;
         font-size: 12px;
         text-transform: uppercase;
         font-weight: 700;
+
+        &.-cursor-pointer {
+          &.-sort-asc {
+            box-shadow: none;
+            >div:first-of-type {
+              &:before {
+                opacity: 1;
+              }
+            }
+          }
+          &.-sort-desc {
+            box-shadow: none;
+            >div:first-of-type {
+              &:after {
+                opacity: 1;
+              }
+            }
+          }
+          >div:first-of-type {
+            &:before {
+              right: 1em;
+              content: "\2191";
+              position: absolute;
+              display: block;
+              opacity: 0.3;
+            }
+
+            &:after {
+              right: 0.5em;
+              content: "\2193";
+              top: 0.4em;
+              position: absolute;
+              display: block;
+              opacity: 0.3;
+            }
+          }
+        }
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+    }
+
+    .rt-body {
+      .rt-td {
+        padding: 12px 7px;
       }
     }
   }
