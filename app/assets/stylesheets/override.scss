@@ -57,10 +57,22 @@
       }
     }
 
-    .rt-body {
-      .rt-td {
+    .rt-tbody {
+      .rt-tr-group .rt-tr .rt-td {
         padding: 12px 7px;
       }
     }
+
+    .pagination-bottom {
+      padding: 50px;
+      .-pagination {
+        border-top: none;
+        .-btn {
+          color: white;
+          background: #5e72e4;
+        }
+      }
+    }
+
   }
 }
