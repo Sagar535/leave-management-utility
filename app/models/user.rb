@@ -10,6 +10,18 @@ class User < ApplicationRecord
 
   # multiply working months with multiplier to get the balance
   MULTIPLIER = 1.5
+  SICK_LEAVE = 5
+  UNPAID_LEAVE = 25
+
+  def sick_leave_balance
+    spent = 0
+    leave_requests.where(status: 'approved')
+                  .where('start > ? and end_date < ?',Fiscal.start_date, Fiscal.next_date).each do |leave_request|
+      spent += leave_request.duration
+    end
+
+    SICK_LEAVE - spent
+  end
 
   def upcoming_leaves
     leave_requests.where("end_date > ?", Time.zone.today)
