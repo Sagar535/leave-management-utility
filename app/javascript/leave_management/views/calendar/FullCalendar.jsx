@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Button, ButtonGroup, Card, CardHeader, CardBody, Container,
-  FormGroup, Form, Input, Modal, Row, Col, Nav, Label,
+  FormGroup, Form, Input, Modal, Row, Col, Nav, Label, Badge,
 } from 'reactstrap';
 import dayjs from 'dayjs';
 // JavaScript library that creates a callendar with events
@@ -84,6 +84,7 @@ class FullCalendar extends React.Component {
       },
       // Edit calendar event action
       eventClick: ({ event }) => {
+        console.log(event.extendedProps)
         this.setState({
           updateLeaveRequest: true,
           eventId: event.id,
@@ -94,6 +95,7 @@ class FullCalendar extends React.Component {
           eventStatus: event.extendedProps.status,
           userName: `${event.extendedProps.user.first_name} ${event.extendedProps.user.last_name}`,
           radios: 'bg-info',
+          sickLeaveBalance: event.extendedProps.user.sick_leave_balance,
           event,
         });
       },
@@ -331,6 +333,15 @@ class FullCalendar extends React.Component {
                   {this.state.userName}
                 </label>
               )
+            }
+
+            {
+              this.isAdmin() &&
+              (<div>
+                <Badge color={this.state.sickLeaveBalance > 0 ? 'success' : 'danger'}>
+                  Sick Leave Balance: {this.state.sickLeaveBalance}
+                </Badge>
+              </div>)
             }
 
             <Form

@@ -19,6 +19,7 @@ export default function Dashboard(props) {
   const [approved, setApproved] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [leaveRequestId, setLeaveRequestId] = useState(undefined);
+  const [sickLeaveBalance, setSickLeaveBalance] = useState(0);
 
   const statusColorMap = {
     pending: 'bg-info',
@@ -74,8 +75,9 @@ export default function Dashboard(props) {
       setRejected(rowInfo.original.status === 'rejected');
       setLeaveRequestId(rowInfo.original.id);
       setLeaveTitle(rowInfo.original.title);
-      setReplyId(rowInfo.original.reply.id);
-      setReply(rowInfo.original.reply.reason);
+      setReplyId(rowInfo.original.reply && rowInfo.original.reply.id);
+      setReply(rowInfo.original.reply && rowInfo.original.reply.reason);
+      setSickLeaveBalance(rowInfo.original.user.sick_leave_balance)
     },
   };
 
@@ -218,6 +220,11 @@ export default function Dashboard(props) {
         </div>
 
         <div className="modal-body">
+          <div>
+            <Badge color={sickLeaveBalance > 0 ? 'success' : 'danger'}>
+              Sick Leave Balance: {sickLeaveBalance}
+            </Badge>
+          </div>
           <label className="form-control-label">Reason</label>
           <Input
             className="form-control-alternative edit-event--title"
