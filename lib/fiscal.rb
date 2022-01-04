@@ -6,5 +6,9 @@ module Fiscal
     Date.new(today.year + 1, 7, 16)
   end
 
-  module_function :next_date
+  def start_date
+    Date.new(Time.zone.today.year, 7, 16)
+  end
+
+  module_function :next_date, :start_date
 end
