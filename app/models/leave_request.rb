@@ -1,36 +1,32 @@
 class LeaveRequest < ApplicationRecord
   belongs_to :user
-  belongs_to :approver, class_name: 'User', foreign_key: :approver_id, optional: true
-  has_one :reply
+  belongs_to :approver, class_name: 'User', optional: true, inverse_of: :leave_requests
+  has_one :reply, dependent: :destroy
   enum status: { pending: 0, approved: 1, rejected: 2 }
   enum leave_type: { sick_leave: 0, personal: 1, others: 2 }
 
-  validates_presence_of :title
-  validates_presence_of :start, :end_date
-  validates_presence_of :leave_type, message: "Leave Type can't be blank"
+  validates :title, :start, :end_date, :leave_type, presence: true
   # validate same user can't create leave for same day with multiple reasons
   validate :prevent_multiple_leave_on_same_day
   validate :approver_exists, if: -> { status != 'pending' }
 
   accepts_nested_attributes_for :reply
 
-  scope :upcoming_leaves,  -> { where('start > ?', Date.today) }
+  scope :upcoming_leaves, -> { where('start > ?', Time.zone.today) }
 
   private
 
   def prevent_multiple_leave_on_same_day
     (user.upcoming_leaves - [self]).each do |leave|
-      if overlaps?(leave)
-         return self.errors.add :message, "Leave already exists for given day/s"
-      end
+      return self.errors.add :message, "Leave already exists for given day/s" if overlaps?(leave)
     end
   end
 
   def approver_exists
-    self.errors.add :approver, 'Approver must be present' unless approver.present?
+    self.errors.add :approver, 'Approver must be present' if approver.blank?
   end
 
-  # Check if a given interval overlaps this interval    
+  # Check if a given interval overlaps this interval
   def overlaps?(other)
     start <= other.end_date && other.start <= self.end_date
   end
