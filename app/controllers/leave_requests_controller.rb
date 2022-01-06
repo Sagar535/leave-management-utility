@@ -46,7 +46,7 @@ class LeaveRequestsController < ApplicationController
   end
   def leave_request_params
     params.require(:leave_request).permit(
-      :title, :start, :end_date, :status, :leave_type, :approver_id,
+      :title, :start_date, :end_date, :status, :leave_type, :approver_id,
       reply_attributes: %i[id reason]
     )
   end
