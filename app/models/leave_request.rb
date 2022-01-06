@@ -17,7 +17,7 @@ class LeaveRequest < ApplicationRecord
   private
 
   def prevent_multiple_leave_on_same_day
-    (user.upcoming_leaves - [self]).each do |leave|
+    user.upcoming_leaves.where.not(id: id).each do |leave|
       return self.errors.add :message, "Leave already exists for given day/s" if overlaps?(leave)
     end
   end
