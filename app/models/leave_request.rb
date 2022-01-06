@@ -1,6 +1,6 @@
 class LeaveRequest < ApplicationRecord
   belongs_to :user
-  belongs_to :approver, class_name: 'User', optional: true, inverse_of: :leave_requests
+  belongs_to :approver, class_name: 'User', optional: true, inverse_of: :approved_leave_requests
   has_one :reply, dependent: :destroy
   enum status: { pending: 0, approved: 1, rejected: 2 }
   enum leave_type: { sick_leave: 0, personal: 1, others: 2 }
