@@ -15,7 +15,7 @@ class LeaveRequest < ApplicationRecord
   scope :upcoming_leaves, -> { where('start_date > ?', Time.zone.today) }
 
   def duration
-    (end_date - start).to_i + 1
+    (end_date - start_date).to_i + 1
   end
 
   private
