@@ -15,6 +15,17 @@ ActiveRecord::Schema.define(version: 2022_01_06_053511) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "leave_balances", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "sick_leave"
+    t.integer "paid_leave"
+    t.integer "unpaid_leave"
+    t.string "fiscal_year"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_leave_balances_on_user_id"
+  end
+
   create_table "leave_requests", force: :cascade do |t|
     t.string "title"
     t.date "start_date"

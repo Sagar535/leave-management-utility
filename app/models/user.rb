@@ -6,6 +6,7 @@ class User < ApplicationRecord
   enum role: { user: 0, admin: 1 }
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
+  has_many :leave_balances
   validates :first_name, :last_name, :join_date, presence: true
 
   # multiply working months with multiplier to get the balance
