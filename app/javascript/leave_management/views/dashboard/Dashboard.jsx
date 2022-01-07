@@ -118,7 +118,7 @@ export default function Dashboard(props) {
                 },
                 {
                   Header: 'Start Date',
-                  accessor: 'start',
+                  accessor: 'start_date',
                   style: { whiteSpace: 'unset' },
                 },
                 {
@@ -130,10 +130,10 @@ export default function Dashboard(props) {
                   id: 'duration',
                   Header: 'Duration',
                   Cell: (row) => {
-                    const { start, end_date } = row.original;
+                    const { start_date, end_date } = row.original;
 
                     // we modified end date to include only till the last day of leave so need to add 1
-                    return (Math.abs(new Date(start) - new Date(end_date)) / 86400000 + 1);
+                    return (Math.abs(new Date(start_date) - new Date(end_date)) / 86400000 + 1);
                   },
                 },
                 {

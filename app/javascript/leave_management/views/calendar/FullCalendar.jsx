@@ -40,14 +40,14 @@ class FullCalendar extends React.Component {
           // first find out if the event is multi day or single day
           // if multiday then add a day to the end date
           let { end_date } = el;
-          if (el.start !== el.end_date) {
+          if (el.start_date !== el.end_date) {
             end_date = new Date(end_date);
             end_date.setDate(end_date.getDate() + 1);
             end_date.toLocaleString();
-            end_date = (`${end_date.getFullYear()}-${end_date.getMonth() + 1}-${end_date.getDate()}`);
+            end_date = (`${end_date.getFullYear()}-${(`0${end_date.getMonth() + 1}`).slice(-2)}-${(`0${end_date.getDate()}`).slice(-2)}`);
           }
 
-          return ({ ...el, className: statusColorMap[el.status], end: end_date });
+          return ({ ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date });
         });
         this.setState({
           events,
@@ -127,7 +127,7 @@ class FullCalendar extends React.Component {
     const postData = {
       leave_request: {
         title: this.state.eventTitle,
-        start: this.state.startDate,
+        start_date: this.state.startDate,
         end_date: this.state.endDate,
         status: 'pending',
         leave_type: this.state.leaveType,
@@ -139,7 +139,7 @@ class FullCalendar extends React.Component {
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
         const newEvents = [...events, { ...data, className: statusColorMap[data.status] }];
-        calendar.addEvent({ ...data, className: statusColorMap[data.status] });
+        calendar.addEvent({ ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date });
         this.setState({
           events: newEvents,
           createLeaveRequest: false,
