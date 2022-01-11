@@ -47,7 +47,7 @@ class LeaveBalanceService
   end
 
   def working_months
-    raise Exception.new("Join date is not present for user with id #{user.id}") if join_date.blank?
+    raise(Exceptions::InvalidRecord, "Join date is not present for user with id #{user.id}") if join_date.blank?
     # implies user has worked in the company for more than a year so is expected to work for 12 months
     return 12 if (Time.zone.today - join_date).to_i > (12 * 30)
 

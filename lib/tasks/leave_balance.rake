@@ -16,7 +16,7 @@ namespace :db do
             p "Failed to populate leave balance for user #{user.id} #{user.first_name } #{user.last_name}"
             p "errors: #{leave_balance.errors.messages}"
         end
-      rescue Exception => e
+      rescue StandardError => e
         p e.message
       end
     end
