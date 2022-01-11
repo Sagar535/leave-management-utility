@@ -80,7 +80,7 @@ class UsersController < ApplicationController
         end
       end
 
-      render 'home/app', locals: { path: '/admin/users', success: "Successfully imported #{imported_count} data." }
+      render 'home/app', locals: { path: '/admin/users', success: (imported_count > 0 ? "Successfully imported #{imported_count} data." : 'All users already imported') }
     end
   end
 
