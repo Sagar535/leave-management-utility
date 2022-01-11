@@ -16,7 +16,8 @@ import NotifyUser from '../../components/Alert/NotifyUser';
 
 export default function User(props) {
   const [users, setUsers] = useState([]);
-  const [importUser, setImportUser] = useState(false);
+  const [errorData, setErrorData] = useState({});
+  const [successData, setSuccessData] = useState({});
 
   const isAdmin = () => props.globalState.userData.role === 'admin';
   useEffect(() => {
@@ -28,20 +29,22 @@ export default function User(props) {
       });
 
     // check if error message is present
-    const error_node = document.getElementById('error_data');
-    const error_data = error_node && error_node.getAttribute('data') || {};
+    const errorNode = document.getElementById('error_data');
+    setErrorData(errorNode && errorNode.getAttribute('data') || {})
 
     // check if success message is present
-    const success_node = document.getElementById('success_data');
-    const success_data = success_node && success_node.getAttribute('data') || {};
+    const successNode = document.getElementById('success_data');
+    setSuccessData(successNode && successNode.getAttribute('data') || {})
 
     // don't notify if no message, when globalState is not set, when notification ref is not set
-    if (Object.keys(error_data).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
-      NotifyUser(error_data, 'bc', 'danger', props.globalState.notificationRef);
+    if (Object.keys(errorData).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
+      NotifyUser(errorData, 'bc', 'danger', props.globalState.notificationRef);
+      setErrorData({})
     }
 
-    if (Object.keys(success_data).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
-      NotifyUser(success_data, 'bc', 'success', props.globalState.notificationRef);
+    if (Object.keys(successData).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
+      NotifyUser(successData, 'bc', 'success', props.globalState.notificationRef);
+      setSuccessData({})
     }
   }, [props.globalState.notificationRef]); // trigger useEffect when props.globalState.notificationRef changes
 
