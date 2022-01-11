@@ -104,6 +104,10 @@ export default function User(props) {
                 style: { whiteSpace: 'unset' },
               },
               {
+                Header: 'Join Date',
+                accessor: 'join_date',
+              },
+              {
                 Header: 'Leave Requests',
                 accessor: 'leave_request_days_count',
                 style: { whiteSpace: 'unset', textAlign: 'right' },
