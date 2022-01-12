@@ -23,6 +23,10 @@ class LeaveBalanceService
     paid_leave = sick_leave_balance.negative? ? (total_paid_leave - sick_leave_balance.abs) : total_paid_leave
 
     paid_leave - non_sick_leave_duration
+  rescue Exceptions::InvalidRecord
+    # for invalid record no leave balance
+    # Fix validity to get the leave balance
+    0
   end
 
   def unpaid_leave_balance
