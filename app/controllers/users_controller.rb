@@ -1,15 +1,14 @@
 class UsersController < ApplicationController
-  require 'csv'
   skip_before_action :verify_authenticity_token
   before_action -> { authorize_class(User) }, only: %i[index new create create_users]
   before_action :set_user, only: %i[show edit update destroy]
 
   def index
-    unless current_user.admin?
-      render json: {error: 'You are not authorized to view this page'}
-    else
+    if current_user.admin?
       @users = User.all
       render json: UserSerializer.new(@users).serialized_json
+    else
+      render json: { error: 'You are not authorized to view this page' }
     end
   end
 
@@ -67,21 +66,20 @@ class UsersController < ApplicationController
 
   def create_users
     if File.extname(params[:userFile]) != ".csv"
-      render 'home/app', locals: { path: '/admin/users', error: 'Please import file with csv extension.' }
+      locals = { path: '/admin/users', error: 'Please import file with csv extension.' }
     else
       csv_text = File.read(params[:userFile])
-      csv = CSV.parse(csv_text, :headers => true)
-      imported_count = 0
-      csv.each do |row|
-        user = User.find_by(email: row.to_hash["email"])
-        unless user.present?
-          User.create!(row.to_hash)
-          imported_count += 1
-        end
+      begin
+        imported_count = ImportService.new(csv_text).import_user
+      rescue ActiveRecord::RecordInvalid => invalid
+        locals ||= { path: '/admin/users', error: invalid.message }
+      rescue StandardError => error
+        locals ||= { path: '/admin/users', error: error }
       end
-
-      render 'home/app', locals: { path: '/admin/users', success: (imported_count > 0 ? "Successfully imported #{imported_count} data." : 'All users already imported') }
     end
+
+    locals ||= { path: '/admin/users', success: (imported_count.positive? ? "Successfully imported #{imported_count} data." : 'All users already imported') }
+    render 'home/app', locals: locals
   end
 
   private
