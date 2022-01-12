@@ -184,7 +184,7 @@ class FullCalendar extends React.Component {
         const { events } = this.state;
         const newEvents = events.map((el) => {
           if (el.id.toString() === id) {
-            el = { ...data, className: statusColorMap[data.status] };
+            el = { ...data, end: el.end_date, start: el.start_date, className: statusColorMap[data.status] };
           }
           return el;
         });
