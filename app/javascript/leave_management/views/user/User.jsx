@@ -30,21 +30,21 @@ export default function User(props) {
 
     // check if error message is present
     const errorNode = document.getElementById('error_data');
-    setErrorData(errorNode && errorNode.getAttribute('data') || {})
+    setErrorData(errorNode && errorNode.getAttribute('data') || {});
 
     // check if success message is present
     const successNode = document.getElementById('success_data');
-    setSuccessData(successNode && successNode.getAttribute('data') || {})
+    setSuccessData(successNode && successNode.getAttribute('data') || {});
 
     // don't notify if no message, when globalState is not set, when notification ref is not set
     if (Object.keys(errorData).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
       NotifyUser(errorData, 'bc', 'danger', props.globalState.notificationRef);
-      setErrorData({})
+      setErrorData({});
     }
 
     if (Object.keys(successData).length > 0 && typeof (props.globalState) !== 'undefined' && props.globalState.notificationRef != null) {
       NotifyUser(successData, 'bc', 'success', props.globalState.notificationRef);
-      setSuccessData({})
+      setSuccessData({});
     }
   }, [props.globalState.notificationRef]); // trigger useEffect when props.globalState.notificationRef changes
 

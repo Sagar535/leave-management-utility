@@ -87,7 +87,7 @@ class FullCalendar extends React.Component {
       },
       // Edit calendar event action
       eventClick: ({ event }) => {
-        console.log(event.extendedProps)
+        console.log(event.extendedProps);
         this.setState({
           updateLeaveRequest: true,
           eventId: event.id,
@@ -184,7 +184,9 @@ class FullCalendar extends React.Component {
         const { events } = this.state;
         const newEvents = events.map((el) => {
           if (el.id.toString() === id) {
-            el = { ...data, end: el.end_date, start: el.start_date, className: statusColorMap[data.status] };
+            el = {
+              ...data, end: el.end_date, start: el.start_date, className: statusColorMap[data.status],
+            };
           }
           return el;
         });
@@ -334,12 +336,16 @@ class FullCalendar extends React.Component {
             }
 
             {
-              this.isAdmin() &&
-              (<div>
+              this.isAdmin()
+              && (
+              <div>
                 <Badge color={this.state.sickLeaveBalance > 0 ? 'success' : 'danger'}>
-                  Sick Leave Balance: {this.state.sickLeaveBalance}
+                  Sick Leave Balance:
+                  {' '}
+                  {this.state.sickLeaveBalance}
                 </Badge>
-              </div>)
+              </div>
+              )
             }
 
             <Form

@@ -78,7 +78,7 @@ export default function Dashboard(props) {
       setLeaveTitle(rowInfo.original.title);
       setReplyId(rowInfo.original.reply && rowInfo.original.reply.id);
       setReply(rowInfo.original.reply && rowInfo.original.reply.reason);
-      setSickLeaveBalance(rowInfo.original.user.sick_leave_balance)
+      setSickLeaveBalance(rowInfo.original.user.sick_leave_balance);
     },
   };
 
@@ -215,7 +215,9 @@ export default function Dashboard(props) {
         <div className="modal-body">
           <div>
             <Badge color={sickLeaveBalance > 0 ? 'success' : 'danger'}>
-              Sick Leave Balance: {sickLeaveBalance}
+              Sick Leave Balance:
+              {' '}
+              {sickLeaveBalance}
             </Badge>
           </div>
           <label className="form-control-label">Reason</label>
