@@ -68,7 +68,9 @@ class UsersController < ApplicationController
     if File.extname(params[:userFile]) != ".csv"
       locals = { path: '/admin/users', error: 'Please import file with csv extension.' }
     else
-      csv_text = File.read(params[:userFile])
+      filename = params[:userFile].tempfile
+      csv_text = File.read(filename)
+      # csv_text = File.read(params[:userFile])
       begin
         imported_count = ImportService.new(csv_text).import_user
       rescue ActiveRecord::RecordInvalid => invalid
