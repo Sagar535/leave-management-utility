@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   }
   resources :leave_requests
   resources :users
-  post 'create_users', :to => 'users#create_users'
+  post 'create_users', to: 'users#create_users'
 
   root "home#app"
   match '*path', to: 'home#app', via: :all

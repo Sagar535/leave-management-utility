@@ -66,8 +66,6 @@ class UsersController < ApplicationController
 
   def create_users
     if File.extname(params[:userFile]) != ".csv"
-      locals = { path: '/admin/users', error: 'Please import file with csv extension.' }
-    else
       filename = params[:userFile].tempfile
       csv_text = File.read(filename)
       # csv_text = File.read(params[:userFile])
@@ -78,6 +76,8 @@ class UsersController < ApplicationController
       rescue StandardError => error
         locals ||= { path: '/admin/users', error: error }
       end
+    else
+      locals = { path: '/admin/users', error: 'Please import file with csv extension.' }
     end
 
     locals ||= { path: '/admin/users', success: (imported_count.positive? ? "Successfully imported #{imported_count} data." : 'All users already imported') }

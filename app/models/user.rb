@@ -6,7 +6,7 @@ class User < ApplicationRecord
   enum role: { user: 0, admin: 1 }
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
-  validates :first_name, :last_name, :join_date,  presence: true
+  validates :first_name, :last_name, :join_date, presence: true
   validates :email, presence: true, uniqueness: true
 
   def upcoming_leaves
@@ -14,6 +14,6 @@ class User < ApplicationRecord
   end
 
   def leave_request_days_count
-    leave_requests.map(&:duration).reduce(:+)
+    leave_requests.sum(&:duration)
   end
 end
