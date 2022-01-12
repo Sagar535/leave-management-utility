@@ -14,7 +14,9 @@ class UsersController < ApplicationController
 
   # GET /users/1
   # GET /users/1.json
-  def show; end
+  def show
+    render json: UserSerializer.new(@user).serialized_json
+  end
 
   # GET /users/new
   def new
