@@ -13,6 +13,7 @@ import ReactTable from '../../components/ReactTable/ReactTable';
 import apiCall from '../../helpers/apiCall';
 import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 import NotifyUser from '../../components/Alert/NotifyUser';
+import {useHistory} from "react-router-dom";
 
 export default function User(props) {
   const [users, setUsers] = useState([]);
@@ -47,6 +48,18 @@ export default function User(props) {
       setSuccessData({});
     }
   }, [props.globalState.notificationRef]); // trigger useEffect when props.globalState.notificationRef changes
+
+  const history = useHistory();
+
+  const onRowClick = (state, rowInfo) => isAdmin() && {
+    onClick: (e) => {
+      console.log(state)
+
+      console.log(rowInfo)
+
+      history.push(`/admin/user-profile/${rowInfo.original.id}`)
+    },
+  }
 
   return (
     <Card className="shadow mb-0">
@@ -116,6 +129,7 @@ export default function User(props) {
             defaultPageSize={10}
             showPaginationBottom
             className="-striped -highlight text-capitalize"
+            getTrProps={onRowClick}
           />
         </div>
       </CardBody>

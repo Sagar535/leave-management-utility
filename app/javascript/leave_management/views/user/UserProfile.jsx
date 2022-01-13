@@ -1,5 +1,5 @@
 import {
-  Card, CardHeader, CardBody, Row, Progress,
+  Card, CardHeader, CardBody, Row, Progress, ListGroup, ListGroupItem,
 } from 'reactstrap';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -33,48 +33,51 @@ export default function User(props) {
           />
         </Row>
       </CardHeader>
-      <CardBody className="mx-auto">
-        <span className="avatar avatar-sm rounded-circle">
-          <img
-            alt="..."
-            src={avatar}
-          />
-        </span>
+      <CardBody className="mx-auto card shadow" style={{width: '50%'}}>
+        <div className="mx-auto">
+          <span className="avatar avatar-lg rounded-circle">
+            <img
+                alt="..."
+                src={avatar}
+            />
+          </span>
+        </div>
+
         <div>
-          <div>
+          <div style={{textAlign: 'center', fontWeight: 'bold'}}>
             {' '}
-            Name:
             {`${user.first_name}  ${user.last_name}`}
           </div>
-          <div>
-            {' '}
-            Email:
-            {user.email}
-          </div>
 
-          <div>
-            {' '}
-            Join Date:
-            {user.join_date}
-          </div>
-          <div>
-            {' '}
-            Sick Leave Balance:
-            {user.sick_leave_balance}
-          </div>
-          <Progress value={(user.sick_leave_balance / SICK_LEAVE) * 100} />
-          <div>
-            {' '}
-            Paid Leave Balance:
-            {user.paid_leave_balance}
-          </div>
-          <Progress value={(user.paid_leave_balance / PAID_LEAVE) * 100} />
-          <div>
-            {' '}
-            Unpaid Leave Balance:
-            {user.unpaid_leave_balance}
-          </div>
-          <Progress value={(user.unpaid_leave_balance / UNPAID_LEAVE) * 100} />
+          <br/>
+          <br/>
+
+          <ListGroup>
+            <ListGroupItem> Email: {user.email}</ListGroupItem>
+            <ListGroupItem>
+              <div>
+                Join Date: {user.join_date}
+              </div>
+            </ListGroupItem>
+            <ListGroupItem>
+              <div>
+                Sick Leave Balance: {user.sick_leave_balance}
+              </div>
+              <Progress value={(user.sick_leave_balance / SICK_LEAVE) * 100} />
+            </ListGroupItem>
+            <ListGroupItem>
+              <div>
+                Paid Leave Balance: {user.paid_leave_balance}
+              </div>
+              <Progress value={(user.paid_leave_balance / PAID_LEAVE) * 100} />
+            </ListGroupItem>
+            <ListGroupItem>
+              <div>
+                Unpaid Leave Balance: {user.unpaid_leave_balance}
+              </div>
+              <Progress value={(user.unpaid_leave_balance / UNPAID_LEAVE) * 100} />
+            </ListGroupItem>
+          </ListGroup>
         </div>
       </CardBody>
     </Card>
