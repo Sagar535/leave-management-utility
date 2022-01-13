@@ -3,21 +3,30 @@ import {
   Button,
   Badge,
   Table,
-  Card, CardBody, CardHeader, Nav, Row, Col,
-} from "reactstrap";
-import ReactTable from "../../components/ReactTable/ReactTable";
+  Card, CardBody, CardHeader, Nav, Row, Col, Modal, Input,
+} from 'reactstrap';
 import Jsona from 'jsona';
+import ReactTable from '../../components/ReactTable/ReactTable';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
 
 export default function Dashboard(props) {
   const [events, setEvents] = useState([]);
+  const [updateLeaveRequest, setUpdateLeaveRequest] = useState(false);
+  const [leaveTitle, setLeaveTitle] = useState('');
+  const [reply, setReply] = useState('');
+  const [replyId, setReplyId] = useState(undefined);
+  const [approved, setApproved] = useState(false);
+  const [rejected, setRejected] = useState(false);
+  const [leaveRequestId, setLeaveRequestId] = useState(undefined);
+
   const statusColorMap = {
-    pending: "bg-info",
-    approved: "bg-success",
-    rejected: "bg-warning",
+    pending: 'bg-info',
+    approved: 'bg-success',
+    rejected: 'bg-warning',
   };
-  const isAdmin = () => props.globalState.userData.role === "admin";
+  const isAdmin = () => props.globalState.userData.role === 'admin';
+  const isPending = (status) => status === 'pending';
 
   useEffect(() => {
     apiCall.fetchEntities('/leave_requests.json')
@@ -30,23 +39,46 @@ export default function Dashboard(props) {
 
   const handleActions = (status, id) => {
     const postData = {
-      status,
+      leave_request: {
+        status,
+        approver_id: props.globalState.userData.id,
+        reply_attributes: {
+          id: replyId,
+          reason: reply,
+        },
+      },
     };
-    apiCall.submitEntity( postData, `/leave_requests/${id}.json`, "patch")
+
+    apiCall.submitEntity(postData, `/leave_requests/${id}.json`, 'patch')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const newEvents = events.map((el) => {
-          if(el.id === id) {
-            el = {...data, className: statusColorMap[data.status]};
+          if (el.id === id) {
+            el = { ...data, className: statusColorMap[data.status] };
           }
           return el;
         });
         setEvents(newEvents);
         NotifyUser(`Successfully ${status}!`, 'bc', `${status === 'approved' ? 'success' : 'danger'}`, props.globalState.notificationRef);
       });
-  }
-  
+
+    setUpdateLeaveRequest(false);
+  };
+
+  const onRowClick = (state, rowInfo) => isAdmin() && {
+    onClick: (e) => {
+      // no need to go through all this, if admin is using the right actions button to handle reject or approve
+      setUpdateLeaveRequest(true);
+      setApproved(rowInfo.original.status === 'approved');
+      setRejected(rowInfo.original.status === 'rejected');
+      setLeaveRequestId(rowInfo.original.id);
+      setLeaveTitle(rowInfo.original.title);
+      setReplyId(rowInfo.original.reply.id);
+      setReply(rowInfo.original.reply.reason);
+    },
+  };
+
   return (
     <>
       <Card className="shadow mb-0">
@@ -57,7 +89,7 @@ export default function Dashboard(props) {
                 Leave Requests
               </h6>
               <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
-                <ol className="breadcrumb breadcrumb-links breadcrumb-dark">
+                <ol className="breadcrumb breadcrumb-links breadcrumb-dark" style={{backgroundColor: 'inherit'}}>
                   <li className="breadcrumb-item"><i className="fas fa-home" /></li>
                   <li className="breadcrumb-item active" aria-current="page">Dashboard</li>
                   <li className="breadcrumb-item" onClick={() => props.history.push('/admin/calendar')}>Calendar</li>
@@ -74,50 +106,51 @@ export default function Dashboard(props) {
               loading={false}
               columns={[
                 {
-                  Header: "Username",
-                  id: "username",
+                  Header: 'Username',
+                  id: 'username',
                   Cell: (row) => {
-                    const {user} = row.original;
+                    const { user } = row.original;
                     return `${user.first_name} ${user.last_name}`;
                   },
-                  style: { whiteSpace: "unset"},
+                  style: { whiteSpace: 'unset' },
                 },
                 {
-                  Header: "Start Date",
-                  accessor: "start",
-                  style: { whiteSpace: "unset"},
+                  Header: 'Start Date',
+                  accessor: 'start_date',
+                  style: { whiteSpace: 'unset' },
                 },
                 {
-                  Header: "End Date",
-                  accessor: "end",
-                  style: { whiteSpace: "unset"},
+                  Header: 'End Date',
+                  accessor: 'end_date',
+                  style: { whiteSpace: 'unset' },
                 },
                 {
-                  id: "duration",
-                  Header: "Duration",
+                  id: 'duration',
+                  Header: 'Duration',
                   Cell: (row) => {
-                    const {start, end} = row.original;
-                    const numberOfDays = Math.abs(new Date(start) - new Date(end))/86400000;
-                    return numberOfDays;
+                    const { start_date, end_date } = row.original;
+
+                    // we modified end date to include only till the last day of leave so need to add 1
+                    return (Math.abs(new Date(start_date) - new Date(end_date)) / 86400000 + 1);
                   },
                 },
                 {
-                  Header: "Reason",
-                  accessor: "title",
-                  style: { whiteSpace: "unset"},
+                  Header: 'Reason',
+                  accessor: 'title',
+                  style: { whiteSpace: 'unset' },
                 },
                 {
-                  id: "status",
-                  accessor: "status",
-                  Header: "Status",
+                  id: 'status',
+                  accessor: 'status',
+                  Header: 'Status',
                   Cell: (row) => {
-                    const {status} = row.original;
+                    const { status } = row.original;
                     return (
                       <Badge color="" className="badge-dot float-right text-capitalize">
                         <i className={statusColorMap[status]} />
                         {status}
                       </Badge>
-                    )
+                    );
                   },
                   filterable: true,
                 },
@@ -126,10 +159,10 @@ export default function Dashboard(props) {
                   show: isAdmin(),
                   Cell: (row) => (
                     <div className="actions-right">
-                      {row.original.status !== "approved" && (
+                      { isPending(row.original.status) && (
                         <Button
                           onClick={() => {
-                            const id = row.original.id;
+                            const { id } = row.original;
                             handleActions('approved', id);
                           }}
                           color="success"
@@ -139,10 +172,10 @@ export default function Dashboard(props) {
                           <i className="tim-icons icon-check-2 text-white font-weight-bold" />
                         </Button>
                       )}
-                      {row.original.status !== "rejected" && (
+                      {isPending(row.original.status) && (
                         <Button
                           onClick={() => {
-                            const id = row.original.id;
+                            const { id } = row.original;
                             handleActions('rejected', id);
                           }}
                           color="danger"
@@ -160,11 +193,84 @@ export default function Dashboard(props) {
               ]}
               defaultPageSize={5}
               showPaginationBottom
+              getTrProps={onRowClick}
               className="-striped -highlight text-capitalize"
             />
           </div>
         </CardBody>
       </Card>
+
+      <Modal
+        isOpen={updateLeaveRequest}
+        toggle={() => setUpdateLeaveRequest(false)}
+        className="modal-dialog-centered modal-secondary"
+      >
+        <div className="modal-header p-1">
+          <button
+            aria-hidden
+            className="close"
+            data-dismiss="modal"
+            type="button"
+            onClick={() => setUpdateLeaveRequest(false)}
+          >
+            <i className="tim-icons icon-simple-remove" />
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <label className="form-control-label">Reason</label>
+          <Input
+            className="form-control-alternative edit-event--title"
+            placeholder="Reason"
+            type="text"
+            defaultValue={leaveTitle}
+            disabled
+          />
+
+          <label className="form-control-label">Reason</label>
+          <Input
+            className="form-control-alternative edit-event--title"
+            placeholder="Reply"
+            type="text"
+            defaultValue={reply}
+            onKeyUp={(e) => setReply(e.target.value)}
+          />
+          <br />
+
+          {!approved && (
+            <>
+              <Button
+                onClick={() => handleActions('approved', leaveRequestId)}
+                color="success"
+                size="sm"
+                className="btn-icon btn-link like"
+              >
+                <i className="tim-icons icon-check-2 text-white font-weight-bold" />
+              </Button>
+              <label className="form-control-label">
+                Approve
+              </label>
+            </>
+          )}
+          <br />
+          { !rejected
+                    && (
+                    <>
+                      <Button
+                        onClick={() => handleActions('rejected', leaveRequestId)}
+                        color="danger"
+                        size="sm"
+                        className="btn-icon btn-link like"
+                      >
+                        <i className="tim-icons icon-simple-remove text-white font-weight-bold" />
+                      </Button>
+                      <label className="form-control-label">
+                        Reject
+                      </label>
+                    </>
+                    )}
+        </div>
+      </Modal>
     </>
   );
-};
+}

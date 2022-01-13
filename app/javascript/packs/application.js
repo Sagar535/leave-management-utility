@@ -8,6 +8,7 @@ import Turbolinks from 'turbolinks';
 import * as ActiveStorage from '@rails/activestorage';
 // eslint-disable-next-line import/no-unresolved
 import 'channels';
+import 'react-table-v6/react-table.css';
 
 Rails.start();
 Turbolinks.start();

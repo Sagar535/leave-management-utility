@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import ReactTableLibrary from 'react-table-v6';
 import PropTypes from 'prop-types';
-import { filterCaseInsensitive } from '../../utils';
+import filterCaseInsensitive from "../../filterCaseInsensitive";
 import Loading from '../../loading';
 import NoData from '../../noData';
 
@@ -25,4 +25,3 @@ export default function ReactTable(props) {
 ReactTable.propTypes = {
   loading: PropTypes.bool.isRequired,
 };
-

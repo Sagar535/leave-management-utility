@@ -1,4 +1,5 @@
 import React from 'react';
+
 export default function NotifyUser(message, position, type, notifierRef) {
   console.log('hi');
   const options = {
@@ -6,7 +7,7 @@ export default function NotifyUser(message, position, type, notifierRef) {
     message: (
       <div>
         <div className="text-capitalize">
-          <i className="tim-icons icon-bell-55 pr-4"></i>
+          <i className="tim-icons icon-bell-55 pr-4" />
           { message }
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 // reactstrap components
-import { 
+import {
   Button, Card, CardHeader, CardBody, CardFooter, CardTitle, FormGroup,
   Form, Input, InputGroupAddon, InputGroupText, InputGroup, Col,
 } from 'reactstrap';
@@ -18,7 +18,7 @@ export default function Login() {
     document.body.classList.toggle('login-page');
     return () => {
       document.body.classList.toggle('login-page');
-    }
+    };
   }, []);
 
   const handleSubmit = (event) => {
@@ -44,7 +44,7 @@ export default function Login() {
     }).catch(() => {
       notify('bc');
     });
-  }
+  };
 
   const notify = (place) => {
     const type = 'danger';
@@ -54,7 +54,7 @@ export default function Login() {
       message: (
         <div>
           <div>
-            <i className='tim-icons icon-bell-55 pr-2' />
+            <i className="tim-icons icon-bell-55 pr-2" />
             Login Unsuccessful!
           </div>
         </div>
@@ -64,7 +64,7 @@ export default function Login() {
       autoDismiss: 7,
     };
     notificationAlert.notificationAlert(options);
-  }
+  };
 
   return (
     <>
@@ -81,14 +81,14 @@ export default function Login() {
               <CardBody>
                 <Form role="form">
                   <FormGroup>
-                  <InputGroup>
-                    <InputGroupAddon addonType="prepend">
-                      <InputGroupText>
-                        <i className="tim-icons icon-email-85" />
-                      </InputGroupText>
-                    </InputGroupAddon>
-                    <Input placeholder="Email" type="text" name="email" onChange={(e) => setEmail(e.target.value)} />
-                  </InputGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-email-85" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input placeholder="Email" type="text" name="email" onChange={(e) => setEmail(e.target.value)} />
+                    </InputGroup>
                     <InputGroup>
                       <InputGroupAddon addonType="prepend">
                         <InputGroupText>
@@ -101,9 +101,9 @@ export default function Login() {
                 </Form>
               </CardBody>
               <CardFooter>
-              <Button block className="mb-3" color="primary" onClick={handleSubmit} size="lg">
-                Get Started
-              </Button>
+                <Button block className="mb-3" color="primary" onClick={handleSubmit} size="lg">
+                  Get Started
+                </Button>
               </CardFooter>
             </Card>
           </Col>

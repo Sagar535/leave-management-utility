@@ -1,116 +1,158 @@
-import React from "react";
-import { 
+import React from 'react';
+import {
   Button, ButtonGroup, Card, CardHeader, CardBody, Container,
-  FormGroup, Form, Input, Modal, Row, Col, Nav,
-} from "reactstrap";
+  FormGroup, Form, Input, Modal, Row, Col, Nav, Label,
+} from 'reactstrap';
 import dayjs from 'dayjs';
 // JavaScript library that creates a callendar with events
-import { Calendar } from "@fullcalendar/core";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interaction from "@fullcalendar/interaction";
-import ConfirmationDeleteAlert from "../../components/Alert/ConfirmationDeleteAlert";
+import { Calendar } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interaction from '@fullcalendar/interaction';
 import Jsona from 'jsona';
+import ConfirmationDeleteAlert from '../../components/Alert/ConfirmationDeleteAlert';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
 
 let calendar;
 const statusColorMap = {
-  pending: "bg-info",
-  approved: "bg-success",
-  rejected: "bg-danger",
+  pending: 'bg-info',
+  approved: 'bg-success',
+  rejected: 'bg-danger',
 };
 
 class FullCalendar extends React.Component {
   state = {
     events: [],
-    alert: null
+    alert: null,
+    errors: {},
+    errorMessages: [],
+    leaveType: 'sick_leave',
   };
 
-  isAdmin = () => this.props.globalState.userData.role === "admin";
+  isAdmin = () => this.props.globalState.userData.role === 'admin';
 
   componentDidMount() {
     apiCall.fetchEntities('/leave_requests.json')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
-        const events = data.map((el) => ({...el, className: statusColorMap[el.status]}));
+        const events = data.map((el) => {
+          // first find out if the event is multi day or single day
+          // if multiday then add a day to the end date
+          let { end_date } = el;
+          if (el.start_date !== el.end_date) {
+            end_date = new Date(end_date);
+            end_date.setDate(end_date.getDate() + 1);
+            end_date.toLocaleString();
+            end_date = (`${end_date.getFullYear()}-${(`0${end_date.getMonth() + 1}`).slice(-2)}-${(`0${end_date.getDate()}`).slice(-2)}`);
+          }
+
+          return ({ ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date });
+        });
         this.setState({
-          events: events,
+          events,
         });
         this.createCalendar(events);
       });
-  };
+  }
 
   createCalendar = (events) => {
     calendar = new Calendar(this.refs.calendar, {
       plugins: [interaction, dayGridPlugin],
-      headerToolbar:false,
+      headerToolbar: false,
       selectable: true,
       editable: true,
-      events: events,
+      events,
+      initialView: 'dayGridMonth',
+      eventDisplay: 'auto',
+      displayEventEnd: true,
       // selectable dates
-      selectAllow: (selectInfo) => {
-        return dayjs().diff(selectInfo.start)/86400000 <= 1;
-      },
+      selectAllow: (selectInfo) => dayjs().diff(selectInfo.start) / 86400000 <= 1,
       // Add new event
-      select: info => {
+      select: (info) => {
+        // end date should be the last day of the leave, better not include the present day
+        const endDate = new Date(info.endStr);
+        endDate.setDate(endDate.getDate() - 1);
+        endDate.toLocaleString();
+
         this.setState({
-          modalAdd: true,
+          createLeaveRequest: true,
           startDate: info.startStr,
-          endDate: info.endStr,
-          radios: "bg-info"
+          endDate,
+          radios: 'bg-info',
         });
       },
       // Edit calendar event action
       eventClick: ({ event }) => {
         this.setState({
-          modalChange: true,
+          updateLeaveRequest: true,
           eventId: event.id,
           eventTitle: event.title,
+          leaveType: event.extendedProps.leave_type,
+          reply: event.extendedProps.reply ? event.extendedProps.reply.reason : '',
+          replyId: event.extendedProps.reply ? event.extendedProps.reply.id : '',
           eventStatus: event.extendedProps.status,
-          userName: event.extendedProps.user.first_name + ' ' + event.extendedProps.user.last_name,
-          radios: "bg-info",
-          event: event,
+          userName: `${event.extendedProps.user.first_name} ${event.extendedProps.user.last_name}`,
+          radios: 'bg-info',
+          event,
         });
-      }
+      },
     });
     calendar.render();
     this.setState({
-      currentDate: calendar.view.title
+      currentDate: calendar.view.title,
     });
   };
 
-  changeView = newView => {
+  changeView = (newView) => {
     calendar.changeView(newView);
     this.setState({
-      currentDate: calendar.view.title
+      currentDate: calendar.view.title,
     });
+  };
+
+  // expect error to be of format {leave: Array(1)}
+  generateErrorMessage = (errors) => {
+    const errorMessages = [];
+    Object.keys(errors).forEach((key) => {
+      errorMessages.push(`${key} ${errors[key][0]}`);
+    });
+
+    return errorMessages;
   };
 
   addNewEvent = () => {
     const postData = {
       leave_request: {
         title: this.state.eventTitle,
-        start: this.state.startDate,
-        end: this.state.endDate,
-        status: "pending",
-      }
+        start_date: this.state.startDate,
+        end_date: this.state.endDate,
+        status: 'pending',
+        leave_type: this.state.leaveType,
+      },
     };
     apiCall.submitEntity(postData, '/leave_requests.json')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
-        const newEvents = [...events, {...data, className: statusColorMap[data.status]}];
-        calendar.addEvent({...data, className: statusColorMap[data.status]});
+        const newEvents = [...events, { ...data, className: statusColorMap[data.status] }];
+        calendar.addEvent({ ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date });
         this.setState({
           events: newEvents,
-          modalAdd: false,
-          events: newEvents,
+          createLeaveRequest: false,
           startDate: undefined,
           endDate: undefined,
-          radios: "bg-info",
-          eventTitle: undefined
+          radios: 'bg-info',
+          eventTitle: undefined,
+          leave_type: 'sick_leave',
+        });
+        this.resetToDefaultState();
+      })
+      .catch((error) => {
+        this.setState({
+          errors: error.response.data,
+          errorMessages: this.generateErrorMessage(error.response.data),
         });
       });
   };
@@ -121,27 +163,34 @@ class FullCalendar extends React.Component {
     const postData = {
       title: this.state.eventTitle,
       status: this.state.eventStatus,
+      leave_type: this.state.leaveType,
+      approver_id: this.props.globalState.userData.id,
+      reply_attributes: {
+        id: this.state.replyId,
+        reason: this.state.reply,
+      },
     };
-    apiCall.submitEntity( postData, `/leave_requests/${id}.json`, "patch")
+    apiCall.submitEntity(postData, `/leave_requests/${id}.json`, 'patch')
       .then((res) => {
         const dataFormatter = new Jsona();
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
         const newEvents = events.map((el) => {
-          if(el.id.toString() === id) {
-            el = {...data, className: statusColorMap[data.status]};
+          if (el.id.toString() === id) {
+            el = { ...data, className: statusColorMap[data.status] };
           }
           return el;
         });
         this.setState({
-          modalChange: false,
+          updateLeaveRequest: false,
           events: newEvents,
-          radios: "bg-info",
+          radios: 'bg-info',
           eventTitle: undefined,
           eventId: undefined,
-          event: undefined
+          event: undefined,
+          leaveType: 'sick_leave',
         });
-        NotifyUser(`Successfully updated`, 'bc', 'success', this.props.globalState.notificationRef);
+        NotifyUser('Successfully updated', 'bc', 'success', this.props.globalState.notificationRef);
         this.createCalendar(newEvents);
       });
   };
@@ -153,10 +202,10 @@ class FullCalendar extends React.Component {
         const newEvents = events.filter((el) => el.id.toString() !== id);
         this.setState({
           events: newEvents,
-          radios: "bg-info",
-          eventTitle: undefined, 
+          radios: 'bg-info',
+          eventTitle: undefined,
           eventId: undefined,
-          alert: <ConfirmationDeleteAlert hideAlert={() => this.setState({ alert: false, })} deleted />,
+          alert: <ConfirmationDeleteAlert hideAlert={() => this.setState({ alert: false })} deleted />,
         });
         this.createCalendar(newEvents);
       });
@@ -165,9 +214,28 @@ class FullCalendar extends React.Component {
   deleteEventAlert = () => {
     this.setState({
       alert: (
-        <ConfirmationDeleteAlert deleteMethod={() => this.deleteEvent(this.state.eventId)} hideAlert={() => this.setState({ alert: false, })} />
-      )
+        <ConfirmationDeleteAlert deleteMethod={() => this.deleteEvent(this.state.eventId)} hideAlert={() => this.setState({ alert: false })} />
+      ),
     });
+  };
+
+  resetToDefaultState = () => {
+    this.setState({
+      updateLeaveRequest: false,
+      createLeaveRequest: false,
+      errors: {},
+      errorMessages: [],
+      leaveType: 'sick_leave',
+      eventTitle: '',
+    });
+  };
+
+  addOrUpdate = (e) => {
+    if (this.state.updateLeaveRequest) {
+      this.updateEvent(e);
+    } else {
+      this.addNewEvent();
+    }
   };
 
   render() {
@@ -196,7 +264,7 @@ class FullCalendar extends React.Component {
                   onClick={() => {
                     calendar.prev();
                     this.setState({
-                      currentDate: calendar.view.title
+                      currentDate: calendar.view.title,
                     });
                   }}
                   size="sm"
@@ -209,20 +277,20 @@ class FullCalendar extends React.Component {
                   onClick={() => {
                     calendar.next();
                     this.setState({
-                      currentDate: calendar.view.title
+                      currentDate: calendar.view.title,
                     });
                   }}
                   size="sm"
                 >
                   <i className="fas fa-angle-right" />
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="month" onClick={() => this.changeView("dayGridMonth")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="month" onClick={() => this.changeView('dayGridMonth')} size="sm">
                   Month
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="basicWeek" onClick={() => this.changeView("dayGridWeek")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="basicWeek" onClick={() => this.changeView('dayGridWeek')} size="sm">
                   Week
                 </Button>
-                <Button className="btn-neutral" color="default" data-calendar-view="basicDay" onClick={() => this.changeView("dayGridDay")} size="sm">
+                <Button className="btn-neutral" color="default" data-calendar-view="basicDay" onClick={() => this.changeView('dayGridDay')} size="sm">
                   Day
                 </Button>
               </Col>
@@ -238,46 +306,11 @@ class FullCalendar extends React.Component {
             </div>
           </CardBody>
         </Card>
+
+        {/* MODAL to create or update existing leave request */}
         <Modal
-          isOpen={this.state.modalAdd}
-          toggle={() => this.setState({ modalAdd: false })}
-          className="modal-dialog-centered modal-secondary"
-        >
-          <div className="modal-header p-2">
-            <button
-              aria-hidden
-              className="close"
-              data-dismiss="modal"
-              type="button"
-              onClick={() => this.setState({ modalAdd: false })}
-            >
-              <i className="tim-icons icon-simple-remove" />
-            </button>
-          </div>
-          <div className="modal-body py-0">
-            <form className="new-event--form">
-              <FormGroup>
-                <label className="form-control-label">Reason</label>
-                <Input
-                  className="form-control-alternative new-event--title"
-                  placeholder="Reason"
-                  type="text"
-                  onChange={e =>
-                    this.setState({ eventTitle: e.target.value })
-                  }
-                />
-              </FormGroup>
-            </form>
-          </div>
-          <div className="modal-footer">
-            <Button className="new-event--add" color="primary" type="button" onClick={this.addNewEvent}>
-              Request Leave
-            </Button>
-          </div>
-        </Modal>
-        <Modal
-          isOpen={this.state.modalChange}
-          toggle={() => this.setState({ modalChange: false })}
+          isOpen={this.state.updateLeaveRequest || this.state.createLeaveRequest}
+          toggle={() => this.resetToDefaultState()}
           className="modal-dialog-centered modal-secondary"
         >
           <div className="modal-header p-1">
@@ -286,36 +319,75 @@ class FullCalendar extends React.Component {
               className="close"
               data-dismiss="modal"
               type="button"
-              onClick={() => this.setState({ modalChange: false })}
+              onClick={() => this.resetToDefaultState()}
             >
               <i className="tim-icons icon-simple-remove" />
             </button>
           </div>
           <div className="modal-body">
-            <label className="font-weight-bold">
-              {this.state.userName}
-            </label>
-            <Form className="edit-event--form" type="submit" onSubmit={(e) => this.updateEvent(e)}>
+            {
+              this.state.updateLeaveRequest && (
+                <label className="font-weight-bold">
+                  {this.state.userName}
+                </label>
+              )
+            }
+
+            <Form
+              className="edit-event--form"
+              type="submit"
+              onSubmit={(e) => { this.addOrUpdate(e); }}
+            >
               <FormGroup>
+                <Label for="leaveType" className="form-control-label">
+                  Leave Type
+                </Label>
+                <select
+                  id="leaveType"
+                  value={this.state.leaveType}
+                  onChange={(e) => this.setState({ leaveType: e.target.value })}
+                  className="form-control"
+                  disabled={this.isAdmin() && this.state.updateLeaveRequest}
+                >
+                  <option value="sick_leave">
+                    Sick Leave
+                  </option>
+                  <option value="personal">
+                    Personal Leave
+                  </option>
+                  <option value="others">
+                    Other
+                  </option>
+                </select>
                 <label className="form-control-label">Reason</label>
                 <Input
                   className="form-control-alternative edit-event--title"
                   placeholder="Reason"
                   type="text"
                   defaultValue={this.state.eventTitle}
-                  onChange={e =>
-                    this.setState({ eventTitle: e.target.value })
-                  }
+                  disabled={this.isAdmin() && this.state.updateLeaveRequest}
+                  onChange={(e) => this.setState({ eventTitle: e.target.value })}
                 />
+                { this.state.errorMessages.map((message) => <div className="red-text">{message}</div>) }
               </FormGroup>
-              {this.isAdmin() && (
+              {this.state.updateLeaveRequest && this.isAdmin() && (
                 <FormGroup>
+                  <label className="form-control-label">Reason</label>
+                  <Input
+                    className="form-control-alternative edit-event--title"
+                    placeholder="Reply"
+                    type="text"
+                    defaultValue={this.state.reply}
+                    onKeyUp={(e) => this.setState({ reply: e.target.value })}
+                  />
                   <label className="form-control-label d-block mb-3 text-capitalize">
-                    Status - {this.state.eventStatus}
+                    Status -
+                    {' '}
+                    {this.state.eventStatus}
                   </label>
                   <Button
-                    onClick={() => this.setState({ eventStatus: "approved" })}
-                    disabled={this.state.eventStatus === "approved"}
+                    onClick={() => this.setState({ eventStatus: 'approved' })}
+                    disabled={this.state.eventStatus === 'approved'}
                     color="success"
                     size="sm"
                     className="btn-icon btn-link like"
@@ -327,8 +399,8 @@ class FullCalendar extends React.Component {
                   </label>
                   <br />
                   <Button
-                    onClick={() => this.setState({ eventStatus: "rejected" })}
-                    disabled={this.state.eventStatus === "rejected"}
+                    onClick={() => this.setState({ eventStatus: 'rejected' })}
+                    disabled={this.state.eventStatus === 'rejected'}
                     color="danger"
                     size="sm"
                     className="btn-icon btn-link like"
@@ -343,12 +415,14 @@ class FullCalendar extends React.Component {
             </Form>
           </div>
           <div className="modal-footer">
-            <Button color="primary" type="submit" onClick={(e) => this.updateEvent(e)}>
-              Update
+            <Button color="primary" type="submit" onClick={(e) => this.addOrUpdate(e)}>
+              { this.state.updateLeaveRequest ? 'Update' : 'Request Leave'}
             </Button>
-            <Button color="danger" onClick={() => this.setState({ modalChange: false }, () => this.deleteEventAlert())}>
+            {this.state.updateLeaveRequest && (
+            <Button color="danger" onClick={() => this.setState({ updateLeaveRequest: false }, () => this.deleteEventAlert())}>
               Delete
             </Button>
+            )}
           </div>
         </Modal>
       </>
