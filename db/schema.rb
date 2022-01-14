@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_050849) do
 ActiveRecord::Schema.define(version: 2022_01_14_055853) do
 ActiveRecord::Schema.define(version: 2022_01_14_062133) do
 ActiveRecord::Schema.define(version: 2022_01_14_073738) do
+ActiveRecord::Schema.define(version: 2022_01_14_105033) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -95,8 +96,10 @@ ActiveRecord::Schema.define(version: 2022_01_14_073738) do
     t.integer "role", default: 0
     t.string "first_name"
     t.string "last_name"
+    t.bigint "salary_setting_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["salary_setting_id"], name: "index_users_on_salary_setting_id"
   end
 
 end

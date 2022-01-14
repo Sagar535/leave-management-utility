@@ -4,6 +4,7 @@ class User < ApplicationRecord
   # :registerable,
   devise :database_authenticatable, :recoverable, :rememberable, :validatable
   enum role: { user: 0, admin: 1 }
+  belongs_to :salary_setting
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
   has_many :salaries, dependent: :destroy

@@ -1,4 +1,5 @@
 class SalarySetting < ApplicationRecord
+  has_many :users, dependent: :nullify
   has_many :salaries, dependent: :nullify
   has_many :tax_rules, dependent: :nullify
 
