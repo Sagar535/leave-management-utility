@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_06_053511) do
+ActiveRecord::Schema.define(version: 2022_01_14_043951) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,20 @@ ActiveRecord::Schema.define(version: 2022_01_06_053511) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["leave_request_id"], name: "index_replies_on_leave_request_id"
+  end
+
+  create_table "salaries", force: :cascade do |t|
+    t.bigint "users_id"
+    t.boolean "ssf_enrolled"
+    t.boolean "life_ensured"
+    t.decimal "basic_salary"
+    t.decimal "commitment_bonus"
+    t.date "from_date"
+    t.date "to_date"
+    t.boolean "active"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["users_id"], name: "index_salaries_on_users_id"
   end
 
   create_table "users", force: :cascade do |t|
