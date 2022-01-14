@@ -6,6 +6,10 @@ class User < ApplicationRecord
   enum role: { user: 0, admin: 1 }
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
+  has_many :salaries
+
+  has_one :active_salary, -> { where(active: true) }, class_name: 'Salary'
+
   validates :first_name, :last_name, presence: true
 
   def upcoming_leaves
