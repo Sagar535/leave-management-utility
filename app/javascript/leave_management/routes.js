@@ -17,6 +17,7 @@ or substantial portions of the Software.
 */
 import FullCalendar from './views/calendar/FullCalendar';
 import Dashboard from './views/dashboard/Dashboard';
+import Admin from './views/admin/Admin';
 
 const routes = [
   {
@@ -31,6 +32,13 @@ const routes = [
     name: 'Calendar',
     icon: 'ni ni-tv-2 text-primary',
     component: FullCalendar,
+    layout: '/admin',
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    icon: 'ni ni-tv-2 text-primary',
+    component: Admin,
     layout: '/admin',
   },
 ];

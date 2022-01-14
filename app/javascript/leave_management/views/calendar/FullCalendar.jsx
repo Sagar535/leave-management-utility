@@ -254,6 +254,7 @@ class FullCalendar extends React.Component {
                     <li className="breadcrumb-item"><i className="fas fa-home" /></li>
                     <li className="breadcrumb-item" onClick={() => this.props.history.push('/admin/dashboard')}>Dashboard</li>
                     <li className="breadcrumb-item active" aria-current="page">Calendar</li>
+                    <li className="breadcrumb-item" onClick={() => props.history.push('/admin/admin')}>Admin</li>
                   </ol>
                 </Nav>
               </Col>
