@@ -11,6 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 2022_01_14_043951) do
+ActiveRecord::Schema.define(version: 2022_01_14_050849) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +50,15 @@ ActiveRecord::Schema.define(version: 2022_01_14_043951) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["users_id"], name: "index_salaries_on_users_id"
     t.index ["user_id"], name: "index_salaries_on_user_id"
+  end
+
+  create_table "tax_rules", force: :cascade do |t|
+    t.bigint "salary_id"
+    t.date "from_date"
+    t.date "to_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["salary_id"], name: "index_tax_rules_on_salary_id"
   end
 
   create_table "users", force: :cascade do |t|
