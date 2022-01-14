@@ -13,6 +13,7 @@
 ActiveRecord::Schema.define(version: 2022_01_14_043951) do
 ActiveRecord::Schema.define(version: 2022_01_14_050849) do
 ActiveRecord::Schema.define(version: 2022_01_14_055853) do
+ActiveRecord::Schema.define(version: 2022_01_14_062133) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -38,7 +39,6 @@ ActiveRecord::Schema.define(version: 2022_01_14_055853) do
   end
 
   create_table "salaries", force: :cascade do |t|
-    t.bigint "users_id"
     t.bigint "user_id"
     t.boolean "ssf_enrolled"
     t.boolean "life_ensured"
@@ -49,9 +49,19 @@ ActiveRecord::Schema.define(version: 2022_01_14_055853) do
     t.boolean "active"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["users_id"], name: "index_salaries_on_users_id"
     t.index ["user_id", "active"], name: "index_salaries_on_user_id_and_active", unique: true, where: "active"
     t.index ["user_id"], name: "index_salaries_on_user_id"
+  end
+
+  create_table "tax_rule_items", force: :cascade do |t|
+    t.bigint "tax_rule_id"
+    t.decimal "amount_from"
+    t.decimal "amount_to"
+    t.decimal "rate"
+    t.string "tax_name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tax_rule_id"], name: "index_tax_rule_items_on_tax_rule_id"
   end
 
   create_table "tax_rules", force: :cascade do |t|
