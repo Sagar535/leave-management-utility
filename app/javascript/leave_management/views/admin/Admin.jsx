@@ -11,7 +11,7 @@ export default function Admin(props) {
         {
             title: 'Salary',
             description: 'View and manage salaries.',
-            url: '/admin/salaries',
+            url: '/admin/salary_settings',
         },
         {
             title: 'User',

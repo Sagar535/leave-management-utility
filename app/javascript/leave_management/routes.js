@@ -18,6 +18,7 @@ or substantial portions of the Software.
 import FullCalendar from './views/calendar/FullCalendar';
 import Dashboard from './views/dashboard/Dashboard';
 import Admin from './views/admin/Admin';
+import SalarySetting from './views/salarySetting/SalarySetting';
 
 const routes = [
   {
@@ -39,6 +40,13 @@ const routes = [
     name: 'Admin',
     icon: 'ni ni-tv-2 text-primary',
     component: Admin,
+    layout: '/admin',
+  },
+  {
+    path: '/salary_settings',
+    name: 'Salary Setting',
+    icon: 'ni ni-tv-2 text-primary',
+    component: SalarySetting,
     layout: '/admin',
   },
 ];
