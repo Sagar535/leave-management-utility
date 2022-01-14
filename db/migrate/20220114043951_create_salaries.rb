@@ -1,7 +1,7 @@
 class CreateSalaries < ActiveRecord::Migration[6.1]
   def change
     create_table :salaries do |t|
-      t.belongs_to :users, index: true
+      t.belongs_to :user, index: true
       t.boolean :ssf_enrolled
       t.boolean :life_ensured
       t.decimal :basic_salary

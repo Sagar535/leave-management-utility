@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_043951) do
 
   create_table "salaries", force: :cascade do |t|
     t.bigint "users_id"
+    t.bigint "user_id"
     t.boolean "ssf_enrolled"
     t.boolean "life_ensured"
     t.decimal "basic_salary"
@@ -47,6 +48,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_043951) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["users_id"], name: "index_salaries_on_users_id"
+    t.index ["user_id"], name: "index_salaries_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
