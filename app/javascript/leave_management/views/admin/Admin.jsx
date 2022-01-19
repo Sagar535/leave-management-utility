@@ -17,7 +17,12 @@ export default function Admin(props) {
             title: 'User',
             description: 'View and manage users.',
             url: '/admin/users',
-        }
+        },
+        {
+          title: 'Tax Rule',
+          description: 'View and manage Tax Rules.',
+          url: '/admin/tax_rules',
+        },
     ])
 
     return (
@@ -27,7 +32,7 @@ export default function Admin(props) {
                     <Row className="pt-4">
                         <Col lg="6">
                             <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0 mr-1">
-                                Leave Requests
+                                Admin
                             </h6>
                             <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
                                 <ol className="breadcrumb breadcrumb-links breadcrumb-dark" style={{backgroundColor: 'inherit'}}>

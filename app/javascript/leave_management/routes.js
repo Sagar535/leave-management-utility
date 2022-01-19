@@ -20,6 +20,7 @@ import Dashboard from './views/dashboard/Dashboard';
 import Admin from './views/admin/Admin';
 import SalarySettingDashboard from './views/salarySetting/SalarySettingDashboard';
 import SalarySetting from './views/salarySetting/SalarySetting';
+import TaxRuleDashboard from './views/taxRule/TaxRuleDashboard';
 
 const routes = [
   {
@@ -55,6 +56,13 @@ const routes = [
     name: 'Salary Setting',
     icon: 'ni ni-tv-2 text-primary',
     component: SalarySetting,
+    layout: '/admin',
+  },
+  {
+    path: '/tax_rules',
+    name: 'Tax Rules Dashboard',
+    icon: 'ni ni-tv-2 text-primary',
+    component: TaxRuleDashboard,
     layout: '/admin',
   },
 ];
