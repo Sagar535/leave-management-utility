@@ -16,9 +16,7 @@ class SalarySettingsController < ApplicationController
   def create
     @salary_setting = SalarySetting.new(salary_setting_params)
     if @salary_setting.save
-      @salary_settings = SalarySetting.all
-      render json: SalariesSettingSerializer.new(@salary_settings).serialized_json
-      # render json: {success: 'Successfully created new salary setting'}, status: :created
+      render json: SalariesSettingSerializer.new(@salary_setting).serialized_json
     else
       redirect_back fallback_location: '/admin/salary_settings', status: :unprocessable_entity
     end
