@@ -1,6 +1,6 @@
 class SalarySettingsController < ApplicationController
-  before_action -> { authorize_class(User) }, only: %i[index]
-  before_action :set_salary_setting, only: [:show]
+  before_action -> { authorize_class(SalarySetting) }, only: %i[index create]
+  before_action :set_salary_setting, only: [:show, :update]
   skip_before_action :verify_authenticity_token
 
   def index
@@ -9,7 +9,27 @@ class SalarySettingsController < ApplicationController
   end
 
   def show
-    render json: SalariesSettingSerializer.new(@salary_setting).serialized_json
+    options = { include: %i[users tax_rules] }
+    render json: SalariesSettingSerializer.new(@salary_setting, options).serialized_json
+  end
+
+  def create
+    @salary_setting = SalarySetting.new(salary_setting_params)
+    if @salary_setting.save
+      @salary_settings = SalarySetting.all
+      render json: SalariesSettingSerializer.new(@salary_settings).serialized_json
+      # render json: {success: 'Successfully created new salary setting'}, status: :created
+    else
+      redirect_back fallback_location: '/admin/salary_settings', status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @salary_setting.update(salary_setting_params)
+      render json: {success: 'Successfully updated'}, status: :ok
+    else
+      redirect_back fallback_location: "/admin/salary_setting/#{@salary_setting.id}", status: :unprocessable_entity
+    end
   end
 
   private
@@ -17,5 +37,10 @@ class SalarySettingsController < ApplicationController
   def set_salary_setting
     @salary_setting = SalarySetting.find(params[:id])
     authorize @salary_setting
+  end
+
+  # Only allow a list of trusted parameters through.
+  def salary_setting_params
+    params.require(:salary_setting).permit(:ssf_office, :ssf_employee, :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max)
   end
 end
