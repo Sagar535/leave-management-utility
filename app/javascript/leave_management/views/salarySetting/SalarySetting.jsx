@@ -1,20 +1,21 @@
-import {Card, CardHeader, CardBody, Col, Nav, Row} from "reactstrap";
-import React, {useEffect, useState} from "react";
-import apiCall from "../../helpers/apiCall";
+import React, { useState, useEffect } from 'react';
+import {Card, CardHeader, CardBody, Col, Nav, Row, ListGroup, ListGroupItem} from "reactstrap";
+import {useParams} from "react-router-dom";
+import apiCall from '../../helpers/apiCall';
 import Jsona from "jsona";
-import ReactTable from '../../components/ReactTable/ReactTable';
 
 export default function SalarySetting(props) {
-    const [salarySettings, setSalarySettings] = useState([])
+    const { id } = useParams()
+    const [salarySetting, setSalarySetting] = useState({})
 
     useEffect(() => {
-        apiCall.fetchEntities('/salary_settings.json')
-            .then((res) => {
+        apiCall.fetchEntities(`/salary_settings/${id}`)
+            .then((res)=> {
                 const dataFormatter = new Jsona();
-                setSalarySettings(dataFormatter.deserialize(res.data))
-            });
+                const salarySetting = dataFormatter.deserialize(res.data);
+                setSalarySetting(salarySetting);
+            })
 
-        console.log(salarySettings)
     }, [])
 
     return (
@@ -39,41 +40,17 @@ export default function SalarySetting(props) {
                 </CardHeader>
                 <CardBody className="mt--6">
                     <div className="bg-white shadow-lg p-5 pb-7" style={{ borderRadius: 5 }}>
-                        <ReactTable
-                            resizable={false}
-                            data={salarySettings}
-                            loading={false}
-                            columns={[
-                                {
-                                    Header: 'SSF Office',
-                                    accessor: 'ssf_office',
-                                    style: { whiteSpace: 'unset' },
-                                },
-                                {
-                                    Header: 'SSF Employee',
-                                    accessor: 'ssf_employee',
-                                    style: {whiteSpace: 'unset'}
-                                },
-                                {
-                                    Header: 'Life Insurance Max',
-                                    accessor: 'life_insurance_max',
-                                    style: {whiteSpace: 'unset'}
-                                },
-                                {
-                                    Header: 'SSF Tax Exemption Rate',
-                                    accessor: 'ssf_tax_exemption_rate',
-                                    style: {whiteSpace: 'unset'}
-                                },
-                                {
-                                    Header: 'SSF Tax Exemption Max',
-                                    accessor: 'ssf_tax_exemption_max',
-                                    style: {whiteSpace: 'unset'}
-                                }
-                            ]}
-                            defaultPageSize={5}
-                            showPaginationBottom
-                            className="-striped -highlight text-capitalize"
-                        />
+                        <h1>Salary setting</h1>
+                        <ListGroup>
+                            {
+                                Object.keys(salarySetting).filter((key) => key != 'type' && key != 'id')
+                                    .map((salarySettingKey, index) => (
+                                        <ListGroupItem key={index}>
+                                            {salarySettingKey} : {salarySetting[salarySettingKey]}
+                                        </ListGroupItem>
+                                    ))
+                            }
+                        </ListGroup>
                     </div>
                 </CardBody>
             </Card>
