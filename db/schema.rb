@@ -78,6 +78,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_105033) do
 
   create_table "tax_rules", force: :cascade do |t|
     t.bigint "salary_setting_id"
+    t.string "name"
     t.date "from_date"
     t.date "to_date"
     t.datetime "created_at", precision: 6, null: false
