@@ -93,6 +93,7 @@ export default function Dashboard(props) {
                   <li className="breadcrumb-item"><i className="fas fa-home" /></li>
                   <li className="breadcrumb-item active" aria-current="page">Dashboard</li>
                   <li className="breadcrumb-item" onClick={() => props.history.push('/admin/calendar')}>Calendar</li>
+                  <li className="breadcrumb-item" onClick={() => props.history.push('/admin/admin')}>Admin</li>
                 </ol>
               </Nav>
             </Col>
