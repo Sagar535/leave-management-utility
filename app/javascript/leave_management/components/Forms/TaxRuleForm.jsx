@@ -6,13 +6,14 @@ export default function TaxRuleForm(props) {
         <>
             <Form
                 onSubmit={props.handleSubmit}
+                data-remote={true}
             >
                 <FormGroup>
                     <Label for='name'>Tax Name</Label>
                     <Input id='name'
                            placeholder='Tax Name'
                            required
-                           value={props.taxRule.name}
+                           value={props.taxRule.name || ''}
                            onChange={(e) => props.setTaxRule({...props.taxRule, name: e.target.value})}
                     />
                 </FormGroup>
@@ -22,7 +23,7 @@ export default function TaxRuleForm(props) {
                            placeholder='Begin Date for Tax Rule'
                            type='date'
                            required
-                           value={props.taxRule.from_date}
+                           value={props.taxRule.from_date || ''}
                            onChange={(e) => props.setTaxRule({...props.taxRule, from_date: e.target.value})}
                     />
                 </FormGroup>
@@ -32,7 +33,7 @@ export default function TaxRuleForm(props) {
                            placeholder='End Date for Tax Rule'
                            required
                            type='date'
-                           value={props.taxRule.to_date}
+                           value={props.taxRule.to_date || ''}
                            onChange={(e) => props.setTaxRule({...props.taxRule, to_date: e.target.value})}
                     />
                 </FormGroup>

@@ -29,6 +29,7 @@ export default function TaxRuleDashboard(props) {
             setUpdateTaxRule(true)
             console.log(rowInfo.original)
             setTaxRuleId(rowInfo.original.id)
+            setTaxRule(rowInfo.original)
         }
     })
 
@@ -42,9 +43,19 @@ export default function TaxRuleDashboard(props) {
     }
 
     const update = () => {
-        apiCall.submitEntity({tax_rule: taxRule}, `/tax_rules/${taxRuleId}`)
+        apiCall.submitEntity({tax_rule: taxRule}, `/tax_rules/${taxRuleId}.json`, 'PATCH')
             .then((res) => {
-                cons
+                const dataFormatter = new Jsona()
+                const updatedTaxRule = dataFormatter.deserialize(res.data)
+                const taxRuleIndex = taxRules.findIndex((taxRule) => taxRule.id === updatedTaxRule.id)
+                taxRules.splice(taxRuleIndex, 1, updatedTaxRule)
+                setTaxRules(taxRules)
+
+                // close the modal form
+                setUpdateTaxRule(false)
+            })
+            .catch((e) => {
+                console.log(e)
             })
     }
 
@@ -70,7 +81,14 @@ export default function TaxRuleDashboard(props) {
                 </CardHeader>
                 <CardBody className="mt--6">
                     <div className="bg-white shadow-lg p-5 pb-7" style={{ borderRadius: 5 }}>
-                        <Button color='success' size='sm' className='mb-2' onClick={() => setCreateTaxRule(true)}>
+                        <Button
+                            color='success'
+                            size='sm'
+                            className='mb-2'
+                            onClick={() => {
+                                setCreateTaxRule(true)
+                                setTaxRule({})
+                            }}>
                             New Tax Rule
                         </Button>
                         <ReactTable

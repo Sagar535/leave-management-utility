@@ -1,29 +1,28 @@
 class TaxRulesController < ApplicationController
   before_action -> { authorize_class(TaxRule) }, only: %i[index create]
-  before_action :set_tax_rule, only: [:show, :update]
+  before_action :set_tax_rule, only: [:update]
   skip_before_action :verify_authenticity_token
 
   def index
-    @tax_rules = TaxRule.all
+    @tax_rules = TaxRule.order(id: :asc)
     render json: TaxRuleSerializer.new(@tax_rules).serialized_json
   end
 
   def create
     @tax_rule = TaxRule.new(tax_rule_params)
-    debugger
     if @tax_rule.save
-      render json: TaxRuleSerializer.new(@tax_rule).serialized_json
+      render json: TaxRuleSerializer.new(@tax_rule).serialized_json, status: :created
     else
       redirect_back fallback_location: '/admin/tax_rules', status: :unprocessable_entity, error: @tax_rule.errors.full_messages
     end
   end
 
-  def show
-
-  end
-
   def update
-
+    if @tax_rule.update(tax_rule_params)
+      render json: TaxRuleSerializer.new(@tax_rule).serialized_json, status: :ok
+    else
+      render json: @tax_rule.errors, status: :unprocessable_entity
+    end
   end
   private
 
