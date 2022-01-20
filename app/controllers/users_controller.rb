@@ -67,7 +67,7 @@ class UsersController < ApplicationController
   end
 
   def create_users
-    if File.extname(params[:userFile]) != ".csv"
+    if File.extname(params[:userFile]) == ".csv"
       filename = params[:userFile].tempfile
       csv_text = File.read(filename)
       # csv_text = File.read(params[:userFile])
