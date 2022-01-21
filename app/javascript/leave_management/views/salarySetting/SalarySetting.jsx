@@ -9,9 +9,7 @@ import {
     ListGroup,
     ListGroupItem,
     Button,
-    Input,
     Modal,
-    FormGroup, Label, Form
 } from "reactstrap";
 import {useParams} from "react-router-dom";
 import apiCall from '../../helpers/apiCall';
@@ -23,18 +21,32 @@ export default function SalarySetting(props) {
     const [salarySetting, setSalarySetting] = useState({})
     const [updateSalarySetting, setUpdateSalarySetting] = useState(false)
     const [defaultTaxRules, setDefaultTaxRules] = useState([])
+    const [userOptions, setUserOptions] = useState([])
+    const [defaultUsers, setDefaultUsers] = useState([])
 
     useEffect(() => {
+        const dataFormatter = new Jsona();
+
         apiCall.fetchEntities(`/salary_settings/${id}`)
             .then((res)=> {
-                const dataFormatter = new Jsona();
                 const salary_setting = dataFormatter.deserialize(res.data);
                 setSalarySetting(salary_setting);
+
+                setDefaultUsers(salary_setting.users.map((user) => {
+                    return {label: `${user.first_name} ${user.last_name}`, value: user.id}
+                }))
+
                 setDefaultTaxRules(salary_setting.tax_rules.map((tax_rule) => (
                     {label: tax_rule.name, value: tax_rule.id}
                 )))
             })
 
+        apiCall.fetchEntities('/users.json')
+            .then((res) => {
+                const users = dataFormatter.deserialize(res.data)
+                const user_options = users.map((user) => ({label: `${user.first_name} ${user.last_name}`, value: user.id}))
+                setUserOptions(user_options)
+            })
     }, [])
 
     useEffect(()=> {
@@ -80,7 +92,7 @@ export default function SalarySetting(props) {
                                 <h1>Salary setting</h1>
                                 <ListGroup>
                                     {
-                                        Object.keys(salarySetting).filter((key) => !['relationshipNames', 'type', 'id', 'users', 'tax_rules'].includes(key))
+                                        Object.keys(salarySetting).filter((key) => !['relationshipNames', 'type', 'id', 'users', 'tax_rules', 'user_ids'].includes(key))
                                             .map((salarySettingKey, index) => (
                                                 <ListGroupItem key={index}>
                                                     {salarySettingKey} : {salarySetting[salarySettingKey]}
@@ -89,6 +101,19 @@ export default function SalarySetting(props) {
                                     }
                                 </ListGroup>
                             </Col>
+                            <Col sm={12} md={6} lg={4}>
+                                <h1>Users</h1>
+                                <ListGroup>
+                                    {
+                                        defaultUsers.map((user, index) => (
+                                            <ListGroupItem key={index}>
+                                                {user.label}
+                                            </ListGroupItem>
+                                        ))
+                                    }
+                                </ListGroup>
+                            </Col>
+
                             <Col sm={12} md={6} lg={4}>
                                 <h1>Tax Rules</h1>
                                 <ListGroup>
@@ -127,6 +152,8 @@ export default function SalarySetting(props) {
                     <SalarySettingForm
                         salarySetting={salarySetting}
                         setSalarySetting={setSalarySetting}
+                        userOptions={userOptions}
+                        defaultUsers={defaultUsers}
                         defaultTaxRules={defaultTaxRules}
                         handleSubmit={update}
                     />

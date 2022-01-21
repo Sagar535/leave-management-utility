@@ -3,20 +3,28 @@ import React, {useEffect, useState} from "react";
 import apiCall from "../../helpers/apiCall";
 import Jsona from "jsona";
 import ReactTable from '../../components/ReactTable/ReactTable';
-import {useHistory} from "react-router-dom";
-import SalarySettingForm from "../../components/Forms/SalarySettingForm";
+import SalarySettingForm from '../../components/Forms/SalarySettingForm';
 
 export default function SalarySettingDashboard(props) {
     const [salarySettings, setSalarySettings] = useState([])
     const [createSalarySetting, setCreateSalarySetting] = useState(false)
     const [newSalarySetting, setNewSalarySetting] = useState({})
+    const [userOptions, setUserOptions] = useState([])
 
     useEffect(() => {
+        const dataFormatter = new Jsona();
+
         apiCall.fetchEntities('/salary_settings.json')
             .then((res) => {
-                const dataFormatter = new Jsona();
                 setSalarySettings(dataFormatter.deserialize(res.data))
             });
+
+        apiCall.fetchEntities('/users.json')
+            .then((res) => {
+                const users = dataFormatter.deserialize(res.data)
+                const user_options = users.map((user) => ({label: `${user.first_name} ${user.last_name}`, value: user.id}))
+                setUserOptions(user_options)
+            })
     }, [])
 
     const onRowClick = (state, rowInfo) => ({
@@ -120,6 +128,7 @@ export default function SalarySettingDashboard(props) {
                     <SalarySettingForm
                         salarySetting={newSalarySetting}
                         setSalarySetting={setNewSalarySetting}
+                            userOptions={userOptions}
                         handleSubmit={create}
                     />
                 </div>
