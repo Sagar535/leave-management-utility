@@ -22,16 +22,24 @@ export default function SalarySetting(props) {
     const { id } = useParams()
     const [salarySetting, setSalarySetting] = useState({})
     const [updateSalarySetting, setUpdateSalarySetting] = useState(false)
+    const [defaultTaxRules, setDefaultTaxRules] = useState([])
 
     useEffect(() => {
         apiCall.fetchEntities(`/salary_settings/${id}`)
             .then((res)=> {
                 const dataFormatter = new Jsona();
-                const salarySetting = dataFormatter.deserialize(res.data);
-                setSalarySetting(salarySetting);
+                const salary_setting = dataFormatter.deserialize(res.data);
+                setSalarySetting(salary_setting);
+                setDefaultTaxRules(salary_setting.tax_rules.map((tax_rule) => (
+                    {label: tax_rule.name, value: tax_rule.id}
+                )))
             })
 
     }, [])
+
+    useEffect(()=> {
+        console.log(defaultTaxRules)
+    }, [defaultTaxRules])
 
     const update = () => {
         apiCall.submitEntity({salary_setting: salarySetting}, `/salary_settings/${salarySetting.id}`, 'PUT')
@@ -67,9 +75,9 @@ export default function SalarySetting(props) {
                         <Button color='success' size='sm' className='mb-2' onClick={() => setUpdateSalarySetting(true)}>
                             Edit
                         </Button>
-                        <h1>Salary setting</h1>
                         <Row>
                             <Col sm={12} md={6} lg={4}>
+                                <h1>Salary setting</h1>
                                 <ListGroup>
                                     {
                                         Object.keys(salarySetting).filter((key) => !['relationshipNames', 'type', 'id', 'users', 'tax_rules'].includes(key))
@@ -82,8 +90,15 @@ export default function SalarySetting(props) {
                                 </ListGroup>
                             </Col>
                             <Col sm={12} md={6} lg={4}>
+                                <h1>Tax Rules</h1>
                                 <ListGroup>
-
+                                    {
+                                        defaultTaxRules.map((tax_rule, index) => (
+                                            <ListGroupItem key={index}>
+                                                {tax_rule.label}
+                                            </ListGroupItem>
+                                        ))
+                                    }
                                 </ListGroup>
                             </Col>
                         </Row>
@@ -112,6 +127,7 @@ export default function SalarySetting(props) {
                     <SalarySettingForm
                         salarySetting={salarySetting}
                         setSalarySetting={setSalarySetting}
+                        defaultTaxRules={defaultTaxRules}
                         handleSubmit={update}
                     />
                 </div>
