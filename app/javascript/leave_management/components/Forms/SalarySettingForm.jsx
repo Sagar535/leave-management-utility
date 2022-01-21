@@ -89,6 +89,21 @@ export default function SalarySettingForm(props) {
                             }}
                     />
                 </FormGroup>
+
+                <FormGroup>
+                    <Label for='tax_ids'>
+                        Select Tax Rules
+                    </Label>
+                    <Select
+                        isMulti
+                        closeMenuOnSelect={false}
+                        defaultValue={props.defaultTaxRules}
+                        options={props.taxOptions}
+                        onChange={(selectedOptions) => {
+                            props.setSalarySetting({...props.salarySetting, tax_rule_ids: selectedOptions.map((option) => option.value)})
+                        }}
+                    />
+                </FormGroup>
                 <Button color='success' type='Submit'>Submit</Button>
             </Form>
         </>
