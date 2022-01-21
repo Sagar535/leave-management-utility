@@ -53,7 +53,7 @@ export default function Admin(props) {
                             {
                                 cards.map((card, index) => {
                                     return (
-                                        <Col sm={6} xs={12} key={index}>
+                                        <Col md={4} sm={6} xs={12} key={index}>
                                             <Card>
                                                 <CardBody>
                                                     <CardTitle>{card.title}</CardTitle>
