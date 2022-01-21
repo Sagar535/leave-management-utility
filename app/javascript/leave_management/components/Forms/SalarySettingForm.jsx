@@ -7,6 +7,7 @@ export default function SalarySettingForm(props) {
         <>
             <Form
                 onSubmit={props.handleSubmit}
+                data-remote={true}
             >
                 <Row>
                     <Col sm={12} md={6}>
