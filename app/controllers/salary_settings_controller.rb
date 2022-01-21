@@ -24,7 +24,8 @@ class SalarySettingsController < ApplicationController
 
   def update
     if @salary_setting.update(salary_setting_params)
-      render json: {success: 'Successfully updated'}, status: :ok
+      options = { include: %i[users tax_rules] }
+      render json: SalariesSettingSerializer.new(@salary_setting, options), status: :ok
     else
       redirect_back fallback_location: "/admin/salary_setting/#{@salary_setting.id}", status: :unprocessable_entity
     end
@@ -39,6 +40,6 @@ class SalarySettingsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def salary_setting_params
-    params.require(:salary_setting).permit(:ssf_office, :ssf_employee, :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, :user_ids => [])
+    params.require(:salary_setting).permit(:ssf_office, :ssf_employee, :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, :user_ids => [], :tax_rule_ids => [])
   end
 end
