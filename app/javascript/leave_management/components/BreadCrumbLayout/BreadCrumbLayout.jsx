@@ -30,10 +30,10 @@ export default function BreadCrumbLayout(props) {
           </li>
           {props.isAdmin && (
           <li
-            className={`breadcrumb-item ${props.title === 'Users' ? 'active' : ''}`}
-            onClick={() => routeChange('/admin/users')}
+            className={`breadcrumb-item ${['Admin', 'Users'].includes(props.title) ? 'active' : ''}`}
+            onClick={() => routeChange('/admin/admin')}
           >
-            Users
+            Admin
           </li>
           )}
         </ol>
