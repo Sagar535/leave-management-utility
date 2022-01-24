@@ -1,5 +1,6 @@
 class TaxRuleItemsController < ApplicationController
-  before_action -> { authorize_class(TaxRuleItem) }, only: %i[index create]
+  before_action -> { authorize_class(TaxRuleItem) }, only: %i[index create update]
+  before_action :set_tax_rule_item, only: :update
 
   def index
     @tax_rule_items = TaxRuleItem.all
@@ -15,7 +16,19 @@ class TaxRuleItemsController < ApplicationController
     end
   end
 
+  def update
+    if @tax_rule_item.update(tax_rule_params)
+      render json: TaxRuleItemSerializer.new(@tax_rule_item).serialized_json
+    else
+      redirect_back fallback_location: '/admin/tax_rule_items', status: :unprocessable_entity, error: @tax_rule_item.errors
+    end
+  end
+
   private
+
+  def set_tax_rule_item
+    @tax_rule_item = TaxRuleItem.find(params[:id])
+  end
 
   # Only allow a list of trusted parameters through.
   def tax_rule_params

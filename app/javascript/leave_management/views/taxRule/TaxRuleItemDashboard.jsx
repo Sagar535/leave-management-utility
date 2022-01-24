@@ -11,6 +11,8 @@ export default function TaxRuleItemDashboard(props) {
   const [taxRuleItems, setTaxRuleItems] = useState([]);
   const [taxRuleItem, setTaxRuleItem] = useState({});
   const [createTaxRuleItem, setCreateTaxRuleItem] = useState(false);
+  const [updateTaxRuleItem, setUpdateTaxRuleItem] = useState(false);
+  const [taxRuleItemId, setTaxRuleItemId] = useState();
 
   useEffect(() => {
     apiCall.fetchEntities('/tax_rule_items.json')
@@ -29,6 +31,32 @@ export default function TaxRuleItemDashboard(props) {
         setCreateTaxRuleItem(false);
       });
   };
+
+  const update = () => {
+    apiCall.submitEntity({ tax_rule_item: taxRuleItem }, `/tax_rule_items/${taxRuleItemId}.json`, 'PATCH')
+      .then((res) => {
+        const dataFormatter = new Jsona();
+        const updatedTaxRuleItem = dataFormatter.deserialize(res.data);
+        const taxRuleItemIndex = taxRuleItems.findIndex((taxRuleItem) => taxRuleItem.id === updatedTaxRuleItem.id);
+        taxRuleItems.splice(taxRuleItemIndex, 1, updatedTaxRuleItem);
+        setTaxRuleItems(taxRuleItems);
+
+        // close the modal form
+        setUpdateTaxRuleItem(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const onRowClick = (state, rowInfo) => ({
+    onClick: (e) => {
+      setUpdateTaxRuleItem(true);
+      setTaxRuleItemId(rowInfo.original.id);
+      setTaxRuleItem(rowInfo.original);
+      console.log(rowInfo.original);
+    },
+  });
 
   return (
     <>
@@ -87,6 +115,7 @@ export default function TaxRuleItemDashboard(props) {
               defaultPageSize={5}
               showPaginationBottom
               className="-striped -highlight text-capitalize"
+              getTrProps={onRowClick}
             />
           </div>
         </CardBody>
@@ -113,6 +142,32 @@ export default function TaxRuleItemDashboard(props) {
             taxRuleItem={taxRuleItem}
             setTaxRuleItem={setTaxRuleItem}
             handleSubmit={create}
+          />
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={updateTaxRuleItem}
+        toggle={() => setUpdateTaxRuleItem(false)}
+        className="modal-dialog-centered modal-secondary"
+      >
+        <div className="modal-header p-1">
+          <button
+            aria-hidden
+            className="close"
+            data-dismiss="modal"
+            type="button"
+            onClick={() => setUpdateTaxRuleItem(false)}
+          >
+            <i className="tim-icons icon-simple-remove" />
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <TaxRuleItemForm
+            taxRuleItem={taxRuleItem}
+            setTaxRuleItem={setTaxRuleItem}
+            handleSubmit={update}
           />
         </div>
       </Modal>
