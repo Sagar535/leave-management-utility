@@ -1,5 +1,5 @@
 class TaxRulesController < ApplicationController
-  before_action -> { authorize_class(TaxRule) }, only: %i[index create]
+  before_action -> { authorize_class(TaxRule) }, only: %i[index create update]
   before_action :set_tax_rule, only: [:update]
   skip_before_action :verify_authenticity_token
 
