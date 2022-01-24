@@ -1,0 +1,2 @@
+class TaxRuleItemPolicy < AdminPolicy
+end
