@@ -2,6 +2,7 @@ import React from 'react';
 import {
   Button, Form, FormGroup, Input, Label,
 } from 'reactstrap';
+import Select from 'react-select';
 
 export default function TaxRuleForm(props) {
   return (
@@ -39,6 +40,20 @@ export default function TaxRuleForm(props) {
           type="date"
           value={props.taxRule.to_date || ''}
           onChange={(e) => props.setTaxRule({ ...props.taxRule, to_date: e.target.value })}
+        />
+      </FormGroup>
+      <FormGroup>
+        <Label for="tax_rule_item_ids">
+          Select Tax Rule Items
+        </Label>
+        <Select
+          isMulti
+          closeMenuOnSelect={false}
+          defaultValue={props.defaultTaxRuleItems}
+          options={props.taxRuleItemOptions}
+          onChange={(selectedOptions) => {
+            props.setTaxRule({ ...props.taxRule, tax_rule_item_ids: selectedOptions.map((option) => option.value) });
+          }}
         />
       </FormGroup>
       <Button color="success" type="Submit">Submit</Button>

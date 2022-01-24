@@ -5,7 +5,8 @@ class TaxRulesController < ApplicationController
 
   def index
     @tax_rules = TaxRule.order(id: :asc)
-    render json: TaxRuleSerializer.new(@tax_rules).serialized_json
+    options = { include: %i[tax_rule_items] }
+    render json: TaxRuleSerializer.new(@tax_rules, options).serialized_json
   end
 
   def create
@@ -33,6 +34,6 @@ class TaxRulesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def tax_rule_params
-    params.require(:tax_rule).permit(:name, :from_date, :to_date, :salary_setting_id)
+    params.require(:tax_rule).permit(:name, :from_date, :to_date, :salary_setting_id, tax_rule_item_ids: [])
   end
 end
