@@ -10,15 +10,32 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_14_043951) do
-ActiveRecord::Schema.define(version: 2022_01_14_050849) do
-ActiveRecord::Schema.define(version: 2022_01_14_055853) do
-ActiveRecord::Schema.define(version: 2022_01_14_062133) do
-ActiveRecord::Schema.define(version: 2022_01_14_073738) do
-ActiveRecord::Schema.define(version: 2022_01_14_105033) do
+ActiveRecord::Schema.define(version: 2022_01_31_125209) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "attendances", force: :cascade do |t|
+    t.boolean "absent"
+    t.date "date"
+    t.bigint "user_id"
+    t.integer "seconds_tracked"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
+  create_table "leave_balances", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "sick_leave"
+    t.integer "paid_leave"
+    t.integer "unpaid_leave"
+    t.string "fiscal_year"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["fiscal_year", "user_id"], name: "index_leave_balances_on_fiscal_year_and_user_id", unique: true
+    t.index ["user_id"], name: "index_leave_balances_on_user_id"
+  end
 
   create_table "leave_requests", force: :cascade do |t|
     t.string "title"
@@ -65,17 +82,6 @@ ActiveRecord::Schema.define(version: 2022_01_14_105033) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "tax_rule_items", force: :cascade do |t|
-    t.bigint "tax_rule_id"
-    t.decimal "amount_from"
-    t.decimal "amount_to"
-    t.decimal "rate"
-    t.string "tax_name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["tax_rule_id"], name: "index_tax_rule_items_on_tax_rule_id"
-  end
-
   create_table "tax_rules", force: :cascade do |t|
     t.bigint "salary_setting_id"
     t.string "name"
@@ -83,6 +89,9 @@ ActiveRecord::Schema.define(version: 2022_01_14_105033) do
     t.date "to_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.decimal "amount_from"
+    t.decimal "amount_to"
+    t.decimal "rate"
     t.index ["salary_setting_id"], name: "index_tax_rules_on_salary_setting_id"
   end
 
@@ -97,6 +106,7 @@ ActiveRecord::Schema.define(version: 2022_01_14_105033) do
     t.integer "role", default: 0
     t.string "first_name"
     t.string "last_name"
+    t.date "join_date"
     t.bigint "salary_setting_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
