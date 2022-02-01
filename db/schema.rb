@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_31_125209) do
+ActiveRecord::Schema.define(version: 2022_02_01_070027) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -80,13 +80,13 @@ ActiveRecord::Schema.define(version: 2022_01_31_125209) do
     t.decimal "ssf_tax_exemption_max"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.date "from_date"
+    t.date "to_date"
   end
 
   create_table "tax_rules", force: :cascade do |t|
     t.bigint "salary_setting_id"
     t.string "name"
-    t.date "from_date"
-    t.date "to_date"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.decimal "amount_from"
