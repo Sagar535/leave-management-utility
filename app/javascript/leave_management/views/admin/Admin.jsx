@@ -23,11 +23,6 @@ export default function Admin(props) {
       description: 'View and manage Tax Rules.',
       url: '/admin/tax_rules',
     },
-    {
-      title: 'Tax Rule Item',
-      description: 'View and manage Tax Rule Items.',
-      url: '/admin/tax_rule_items',
-    },
   ]);
 
   return (

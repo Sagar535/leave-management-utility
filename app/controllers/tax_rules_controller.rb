@@ -5,8 +5,7 @@ class TaxRulesController < ApplicationController
 
   def index
     @tax_rules = TaxRule.order(id: :asc)
-    options = { include: %i[tax_rule_items] }
-    render json: TaxRuleSerializer.new(@tax_rules, options).serialized_json
+    render json: TaxRuleSerializer.new(@tax_rules).serialized_json
   end
 
   def create

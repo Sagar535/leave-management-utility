@@ -42,20 +42,6 @@ export default function TaxRuleForm(props) {
           onChange={(e) => props.setTaxRule({ ...props.taxRule, to_date: e.target.value })}
         />
       </FormGroup>
-      <FormGroup>
-        <Label for="tax_rule_item_ids">
-          Select Tax Rule Items
-        </Label>
-        <Select
-          isMulti
-          closeMenuOnSelect={false}
-          defaultValue={props.defaultTaxRuleItems}
-          options={props.taxRuleItemOptions}
-          onChange={(selectedOptions) => {
-            props.setTaxRule({ ...props.taxRule, tax_rule_item_ids: selectedOptions.map((option) => option.value) });
-          }}
-        />
-      </FormGroup>
       <Button color="success" type="Submit">Submit</Button>
     </Form>
   );

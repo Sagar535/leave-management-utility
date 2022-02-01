@@ -15,8 +15,6 @@ export default function TaxRuleDashboard(props) {
   const [taxRule, setTaxRule] = useState({});
   const [taxRules, setTaxRules] = useState([]);
   const [taxRuleId, setTaxRuleId] = useState();
-  const [defaultTaxRuleItems, setDefaultTaxRuleItems] = useState([]);
-  const [taxRuleItemOptions, setTaxRuleItemOptions] = useState([]);
 
   useEffect(() => {
     const dataFormatter = new Jsona();
@@ -25,25 +23,7 @@ export default function TaxRuleDashboard(props) {
       .then((res) => {
         setTaxRules(dataFormatter.deserialize(res.data));
       });
-
-    apiCall.fetchEntities('/tax_rule_items.json')
-      .then((res) => {
-        const tax_rule_items = dataFormatter.deserialize(res.data);
-        const tax_rule_item_options = tax_rule_items.map((item) => ({
-          label: item.amount_from,
-          value: item.id,
-        }));
-        setTaxRuleItemOptions(tax_rule_item_options);
-      });
   }, []);
-
-  useEffect(() => {
-    if (taxRule.tax_rule_items !== undefined) {
-      setDefaultTaxRuleItems(taxRule.tax_rule_items.map((tax_rule_item) => (
-        { label: tax_rule_item.amount_from, value: tax_rule_item.id }
-      )));
-    }
-  }, [taxRule]);
 
   const onRowClick = (state, rowInfo) => ({
     onClick: (e) => {
@@ -109,7 +89,6 @@ export default function TaxRuleDashboard(props) {
               onClick={() => {
                 setCreateTaxRule(true);
                 setTaxRule({});
-                setDefaultTaxRuleItems([]);
               }}
             >
               New Tax Rule
@@ -165,8 +144,6 @@ export default function TaxRuleDashboard(props) {
           <TaxRuleForm
             taxRule={taxRule}
             setTaxRule={setTaxRule}
-            defaultTaxRuleItems={defaultTaxRuleItems}
-            taxRuleItemOptions={taxRuleItemOptions}
             handleSubmit={create}
           />
         </div>
@@ -193,8 +170,6 @@ export default function TaxRuleDashboard(props) {
           <TaxRuleForm
             taxRule={taxRule}
             setTaxRule={setTaxRule}
-            defaultTaxRuleItems={defaultTaxRuleItems}
-            taxRuleItemOptions={taxRuleItemOptions}
             handleSubmit={update}
           />
         </div>
