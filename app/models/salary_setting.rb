@@ -5,6 +5,6 @@ class SalarySetting < ApplicationRecord
 
   accepts_nested_attributes_for :tax_rules
 
-  validates :ssf_office, :ssf_employee, presence: true, numericality: { greater_than: 0, less_than: 100 }
-  validates  :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, presence: true
+  validates :ssf_office, :ssf_employee, presence: true, numericality: { greater_than: 0, less_than_or_equal_to: 100 }
+  validates  :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, :from_date, presence: true
 end

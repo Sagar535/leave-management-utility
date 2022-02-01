@@ -1,8 +1,29 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Button, Form, FormGroup, Input, Label, Row, Col} from 'reactstrap';
-import Select from 'react-select';
 
 export default function SalarySettingForm(props) {
+    const [taxRules, setTaxRules] = useState([])
+
+    useEffect(() => {
+        setTaxRules(props.defaultTaxRules || [])
+    }, [])
+
+    useEffect(() => {
+        props.setSalarySetting({...props.salarySetting, tax_rules_attributes: taxRules})
+    }, [taxRules])
+
+    const addNewTaxRule = () => {
+        const date = new Date()
+        setTaxRules([...taxRules, {key: date.getTime()}])
+    }
+
+    // identifier could be taxRule.id or taxRule.key
+    const updateTaxRules = (identifier, key, value)  => {
+        const index = taxRules.findIndex((taxRule) => (taxRule.id == identifier || taxRule.key == identifier))
+        taxRules[index][key] = value
+        setTaxRules([...taxRules])
+    }
+
     return (
         <>
             <Form
@@ -74,36 +95,94 @@ export default function SalarySettingForm(props) {
                         </FormGroup>
                     </Col>
                 </Row>
+                <Row>
+                    <Col sm={12} md={6}>
+                        <FormGroup>
+                            <Label for='from_date'>From Date</Label>
+                            <Input id='from_date'
+                                   placeholder='Start Date of the salary setting'
+                                   value={props.salarySetting.from_date}
+                                   onChange={(e) => props.setSalarySetting({...props.salarySetting, from_date: e.target.value})}
+                                   type='date'
+                                   required
+                            />
+                        </FormGroup>
+                    </Col>
+                    <Col sm={12} md={6}>
+                        <FormGroup>
+                            <Label for='to_date'>To Date</Label>
+                            <Input id='to_date'
+                                   placeholder='End Date of the salary setting'
+                                   value={props.salarySetting.to_date}
+                                   onChange={(e) => props.setSalarySetting({...props.salarySetting, to_date: e.target.value})}
+                                   type='date'
+                            />
+                        </FormGroup>
+                    </Col>
+                </Row>
+                <div className='mb-3'>
+                    <h4>Tax Rules</h4>
+                    {
+                        taxRules.length <= 0 ? (<div>N/A</div>) :
+                            taxRules.map((taxRule) => (
+                                <div key={taxRule.id || taxRule.key}>
+                                    <Row>
+                                        <Col sm={12} md={6} lg={4}>
+                                            <FormGroup>
+                                                <Label for={`from_amount_${taxRule.id || taxRule.key}`}>Amount From</Label>
+                                                <Input
+                                                    id={`from_amount_${taxRule.id || taxRule.key}`}
+                                                    value={taxRule.amount_from || ''}
+                                                    type='number'
+                                                    onChange={(e) => {
+                                                        const identifier = taxRule.id || taxRule.key
+                                                        updateTaxRules(identifier, 'amount_from', e.target.value)
+                                                    }}
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                        <Col sm={12} md={6} lg={4}>
+                                            <FormGroup>
+                                                <Label for={`to_amount_${taxRule.id || taxRule.key}`}>Amount To</Label>
+                                                <Input
+                                                    id={`to_amount_${taxRule.id || taxRule.key}`}
+                                                    value={taxRule.amount_to || ''}
+                                                    type='number'
+                                                    onChange={(e) => {
+                                                        const identifier = taxRule.id || taxRule.key
+                                                        updateTaxRules(identifier, 'amount_to', e.target.value)
+                                                    }}
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                        <Col sm={12} md={6} lg={4}>
+                                            <FormGroup>
+                                                <Label for={`rate_${taxRule.id || taxRule.key}`}>Rate</Label>
+                                                <Input
+                                                    id={`rate_${taxRule.id || taxRule.key}`}
+                                                    value={taxRule.rate || ''}
+                                                    onChange={(e) => {
+                                                        const identifier = taxRule.id || taxRule.key
+                                                        updateTaxRules(identifier, 'rate', e.target.value)
+                                                    }}
+                                                />
+                                            </FormGroup>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            ))
+                    }
+                </div>
 
-                <FormGroup>
-                    <Label for='user_ids'>
-                        Select Users
-                    </Label>
-                    <Select
-                            isMulti
-                            closeMenuOnSelect={false}
-                            defaultValue={props.defaultUsers}
-                            options={props.userOptions}
-                            onChange={(selectedOptions) => {
-                                props.setSalarySetting({...props.salarySetting, user_ids: selectedOptions.map((option) => option.value)})
-                            }}
-                    />
-                </FormGroup>
-
-                <FormGroup>
-                    <Label for='tax_ids'>
-                        Select Tax Rules
-                    </Label>
-                    <Select
-                        isMulti
-                        closeMenuOnSelect={false}
-                        defaultValue={props.defaultTaxRules}
-                        options={props.taxOptions}
-                        onChange={(selectedOptions) => {
-                            props.setSalarySetting({...props.salarySetting, tax_rule_ids: selectedOptions.map((option) => option.value)})
-                        }}
-                    />
-                </FormGroup>
+                <Button
+                    color='link mb-3'
+                    size='sm'
+                    type='button'
+                    onClick={addNewTaxRule}
+                >
+                    Add Tax Rules
+                </Button>
+                <br/>
                 <Button color='success' type='Submit'>Submit</Button>
             </Form>
         </>

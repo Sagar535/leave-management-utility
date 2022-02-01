@@ -39,6 +39,8 @@ export default function SalarySettingDashboard(props) {
                 const dataFormatter = new Jsona()
                 const salarySetting = dataFormatter.deserialize(res.data)
                 setSalarySettings([...salarySettings, salarySetting])
+                setCreateSalarySetting(false)
+                setNewSalarySetting({})
             })
     }
 
@@ -128,7 +130,6 @@ export default function SalarySettingDashboard(props) {
                     <SalarySettingForm
                         salarySetting={newSalarySetting}
                         setSalarySetting={setNewSalarySetting}
-                            userOptions={userOptions}
                         handleSubmit={create}
                     />
                 </div>

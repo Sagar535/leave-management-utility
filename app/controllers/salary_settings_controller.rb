@@ -40,6 +40,6 @@ class SalarySettingsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def salary_setting_params
-    params.require(:salary_setting).permit(:ssf_office, :ssf_employee, :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, :user_ids => [], :tax_rule_ids => [])
+    params.require(:salary_setting).permit(:ssf_office, :ssf_employee, :life_insurance_max, :ssf_tax_exemption_rate, :ssf_tax_exemption_max, :from_date, :to_date, tax_rules_attributes: [:id, :name, :amount_from, :amount_to, :rate])
   end
 end

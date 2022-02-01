@@ -21,9 +21,6 @@ export default function SalarySetting(props) {
     const [salarySetting, setSalarySetting] = useState({})
     const [updateSalarySetting, setUpdateSalarySetting] = useState(false)
     const [defaultTaxRules, setDefaultTaxRules] = useState([])
-    const [taxOptions, setTaxOptions] = useState([])
-    const [userOptions, setUserOptions] = useState([])
-    const [defaultUsers, setDefaultUsers] = useState([])
 
     useEffect(() => {
         const dataFormatter = new Jsona();
@@ -33,35 +30,13 @@ export default function SalarySetting(props) {
                 const salary_setting = dataFormatter.deserialize(res.data);
                 setSalarySetting(salary_setting);
             })
-
-        apiCall.fetchEntities('/users.json')
-            .then((res) => {
-                const users = dataFormatter.deserialize(res.data)
-                const user_options = users.map((user) => ({label: `${user.first_name} ${user.last_name}`, value: user.id}))
-                setUserOptions(user_options)
-            })
-
-        apiCall.fetchEntities('/tax_rules.json')
-            .then((res) => {
-                const taxes = dataFormatter.deserialize(res.data)
-                const tax_options = taxes.map((tax) => ({label: `${tax.name}`, value: tax.id}))
-                setTaxOptions(tax_options)
-            })
     }, [])
 
     // runs everytime salary setting is updated
     // sets default users and tax rules
     useEffect(() => {
-        if (salarySetting.users !== undefined) {
-            setDefaultUsers(salarySetting.users.map((user) => {
-                return {label: `${user.first_name} ${user.last_name}`, value: user.id}
-            }))
-        }
-
         if (salarySetting.tax_rules !== undefined) {
-            setDefaultTaxRules(salarySetting.tax_rules.map((tax_rule) => (
-                {label: tax_rule.name, value: tax_rule.id}
-            )))
+            setDefaultTaxRules(salarySetting.tax_rules)
         }
     }, [salarySetting])
 
@@ -105,27 +80,12 @@ export default function SalarySetting(props) {
                                 <h1>Salary setting</h1>
                                 <ListGroup>
                                     {
-                                        Object.keys(salarySetting).filter((key) => !['relationshipNames', 'type', 'id', 'users', 'tax_rules', 'user_ids'].includes(key))
+                                        Object.keys(salarySetting).filter((key) => !['relationshipNames', 'type', 'id', 'users', 'tax_rules', 'tax_rules_attributes', 'user_ids'].includes(key))
                                             .map((salarySettingKey, index) => (
                                                 <ListGroupItem key={index}>
                                                     {salarySettingKey} : {salarySetting[salarySettingKey]}
                                                 </ListGroupItem>
                                             ))
-                                    }
-                                </ListGroup>
-                            </Col>
-                            <Col sm={12} md={6} lg={4} className='mt-5'>
-                                <h1>Users</h1>
-                                <ListGroup>
-                                    {
-                                        defaultUsers.length > 0 ?
-                                        defaultUsers.map((user, index) => (
-                                            <ListGroupItem key={index}>
-                                                {user.label}
-                                            </ListGroupItem>
-                                        ))
-                                            :
-                                            'N/A'
                                     }
                                 </ListGroup>
                             </Col>
@@ -137,7 +97,7 @@ export default function SalarySetting(props) {
                                         defaultTaxRules.length > 0 ?
                                         defaultTaxRules.map((tax_rule, index) => (
                                             <ListGroupItem key={index}>
-                                                {tax_rule.label}
+                                                {tax_rule.name}
                                             </ListGroupItem>
                                         ))
                                             :
@@ -171,9 +131,6 @@ export default function SalarySetting(props) {
                     <SalarySettingForm
                         salarySetting={salarySetting}
                         setSalarySetting={setSalarySetting}
-                        userOptions={userOptions}
-                        defaultUsers={defaultUsers}
-                        taxOptions={taxOptions}
                         defaultTaxRules={defaultTaxRules}
                         handleSubmit={update}
                     />
