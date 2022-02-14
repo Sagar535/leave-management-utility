@@ -16,7 +16,7 @@
 
 */
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 // reactstrap components
 import {
   DropdownMenu, DropdownItem, UncontrolledDropdown, DropdownToggle, NavLink, Navbar, Nav, Container, Media,
@@ -26,6 +26,8 @@ import axios from 'axios';
 import Store from '../../Store';
 
 export default function AdminNavbar(props) {
+  const history = useHistory();
+  const routeChange = (path) => history.push(path);
   const { globalState } = useContext(Store);
   const fullName = `${globalState.userData.first_name} ${globalState.userData.last_name}`;
 
@@ -42,6 +44,8 @@ export default function AdminNavbar(props) {
       window.location.href = '/users/sign_in';
     });
   };
+
+  const visitProfile = () => routeChange(`/admin/user-profile/${globalState.userData.id}`);
 
   return (
     <Navbar className="navbar-top navbar-dark pr-5 bg-primary" expand="md" id="navbar-main">
@@ -70,6 +74,10 @@ export default function AdminNavbar(props) {
               </Media>
             </DropdownToggle>
             <DropdownMenu className="dropdown-menu-arrow right">
+              <DropdownItem onClick={() => visitProfile()}>
+                <i className="ni ni-user-run" />
+                <span>Profile</span>
+              </DropdownItem>
               <DropdownItem onClick={() => handleLogout()}>
                 <i className="ni ni-user-run" />
                 <span>Logout</span>

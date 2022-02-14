@@ -18,6 +18,8 @@ or substantial portions of the Software.
 import FullCalendar from './views/calendar/FullCalendar';
 import Dashboard from './views/dashboard/Dashboard';
 import Admin from './views/admin/Admin';
+import User from './views/user/User';
+import UserProfile from './views/user/UserProfile';
 
 const routes = [
   {
@@ -39,6 +41,20 @@ const routes = [
     name: 'Admin',
     icon: 'ni ni-tv-2 text-primary',
     component: Admin,
+    layout: '/admin',
+  },
+  {
+    path: '/users',
+    name: 'User',
+    icon: 'ni ni-tv-2 text-primary',
+    component: User,
+    layout: '/admin',
+  },
+  {
+    path: '/user-profile/:id',
+    name: 'UserProfile',
+    icon: 'ni ni-tv-2 text-primary',
+    component: UserProfile,
     layout: '/admin',
   },
 ];

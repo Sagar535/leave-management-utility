@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   }
   resources :leave_requests
   resources :users
+  post 'create_users', to: 'users#create_users'
+
   root "home#app"
   match '*path', to: 'home#app', via: :all
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
