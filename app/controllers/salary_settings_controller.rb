@@ -27,8 +27,10 @@ class SalarySettingsController < ApplicationController
       options = { include: %i[users tax_rules] }
       render json: SalariesSettingSerializer.new(@salary_setting, options), status: :ok
     else
-      redirect_back fallback_location: "/admin/salary_setting/#{@salary_setting.id}", status: :unprocessable_entity
+      render json: { message: "Salary Setting cannot be updated...", errors: @salary_setting.errors.full_messages }, status: :unprocessable_entity
     end
+  rescue ActiveRecord::RecordNotSaved => error
+    render json: { message: "Salary Setting cannot be updated...", errors: error.message }, status: :unprocessable_entity
   end
 
   private
