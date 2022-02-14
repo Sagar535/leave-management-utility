@@ -16,13 +16,18 @@ class ImportService
 
       next unless user.new_record?
 
-      user = User.new(user_params)
-      raise(ActiveRecord::RecordInvalid.new(user), "#{user.errors.full_messages} for record with email #{user.email}") if user.invalid?
+      raise(ActiveRecord::RecordInvalid.new(user), error_message(user)) if user.invalid?
 
       user.save!
       imported_count += 1
     end
 
     imported_count
+  end
+
+  private
+
+  def error_message(user)
+    "#{user.errors.full_messages} for record with email #{user.email}"
   end
 end
