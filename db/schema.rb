@@ -24,7 +24,6 @@ ActiveRecord::Schema.define(version: 2022_02_14_053752) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["fiscal_year", "user_id"], name: "index_leave_balances_on_fiscal_year_and_user_id", unique: true
-    t.index ["user_id", "fiscal_year"], name: "index_leave_balances_on_user_id_and_fiscal_year", unique: true
     t.index ["user_id"], name: "index_leave_balances_on_user_id"
   end
 
