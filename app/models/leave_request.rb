@@ -12,7 +12,11 @@ class LeaveRequest < ApplicationRecord
 
   accepts_nested_attributes_for :reply
 
-  scope :upcoming_leaves, -> { where('start_date > ?', Time.zone.today) }
+  scope :upcoming_leaves, -> { where('start_date > ? OR end_date > ?', Time.zone.today, Time.zone.today) }
+
+  def duration
+    (end_date - start_date).to_i + 1
+  end
 
   private
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Button, ButtonGroup, Card, CardHeader, CardBody, Container,
-  FormGroup, Form, Input, Modal, Row, Col, Nav, Label,
+  FormGroup, Form, Input, Modal, Row, Col, Nav, Label, Badge,
 } from 'reactstrap';
 import dayjs from 'dayjs';
 // JavaScript library that creates a callendar with events
@@ -12,6 +12,7 @@ import Jsona from 'jsona';
 import ConfirmationDeleteAlert from '../../components/Alert/ConfirmationDeleteAlert';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
+import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 
 let calendar;
 const statusColorMap = {
@@ -47,7 +48,9 @@ class FullCalendar extends React.Component {
             end_date = (`${end_date.getFullYear()}-${(`0${end_date.getMonth() + 1}`).slice(-2)}-${(`0${end_date.getDate()}`).slice(-2)}`);
           }
 
-          return ({ ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date });
+          return ({
+            ...el, className: statusColorMap[el.status], end: end_date, start: el.start_date,
+          });
         });
         this.setState({
           events,
@@ -84,6 +87,7 @@ class FullCalendar extends React.Component {
       },
       // Edit calendar event action
       eventClick: ({ event }) => {
+        console.log(event.extendedProps);
         this.setState({
           updateLeaveRequest: true,
           eventId: event.id,
@@ -94,6 +98,7 @@ class FullCalendar extends React.Component {
           eventStatus: event.extendedProps.status,
           userName: `${event.extendedProps.user.first_name} ${event.extendedProps.user.last_name}`,
           radios: 'bg-info',
+          sickLeaveBalance: event.extendedProps.user.sick_leave_balance,
           event,
         });
       },
@@ -137,7 +142,9 @@ class FullCalendar extends React.Component {
         const data = dataFormatter.deserialize(res.data);
         const { events } = this.state;
         const newEvents = [...events, { ...data, className: statusColorMap[data.status] }];
-        calendar.addEvent({ ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date });
+        calendar.addEvent({
+          ...data, className: statusColorMap[data.status], start: data.start_date, end: data.end_date,
+        });
         this.setState({
           events: newEvents,
           createLeaveRequest: false,
@@ -177,7 +184,9 @@ class FullCalendar extends React.Component {
         const { events } = this.state;
         const newEvents = events.map((el) => {
           if (el.id.toString() === id) {
-            el = { ...data, className: statusColorMap[data.status] };
+            el = {
+              ...data, end: el.end_date, start: el.start_date, className: statusColorMap[data.status],
+            };
           }
           return el;
         });
@@ -245,19 +254,11 @@ class FullCalendar extends React.Component {
         <Card className="card-calendar mb-0">
           <CardHeader className="bg-primary pb-5 px-5">
             <Row className="align-items-center py-4">
-              <Col lg="6">
-                <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0 mr-1">
-                  {this.state.currentDate}
-                </h6>
-                <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
-                  <ol className="breadcrumb breadcrumb-links breadcrumb-dark">
-                    <li className="breadcrumb-item"><i className="fas fa-home" /></li>
-                    <li className="breadcrumb-item" onClick={() => this.props.history.push('/admin/dashboard')}>Dashboard</li>
-                    <li className="breadcrumb-item active" aria-current="page">Calendar</li>
-                    <li className="breadcrumb-item" onClick={() => props.history.push('/admin/admin')}>Admin</li>
-                  </ol>
-                </Nav>
-              </Col>
+              <BreadCrumbLayout
+                title={this.state.currentDate}
+                date={this.state.currentDate}
+                isAdmin={this.isAdmin()}
+              />
               <Col className="mt-3 mt-lg-0 text-lg-right" lg="6">
                 <Button
                   className="fullcalendar-btn-prev btn-neutral"
@@ -331,6 +332,19 @@ class FullCalendar extends React.Component {
                 <label className="font-weight-bold">
                   {this.state.userName}
                 </label>
+              )
+            }
+
+            {
+              this.isAdmin()
+              && (
+              <div>
+                <Badge color={this.state.sickLeaveBalance > 0 ? 'success' : 'danger'}>
+                  Sick Leave Balance:
+                  {' '}
+                  {this.state.sickLeaveBalance}
+                </Badge>
+              </div>
               )
             }
 

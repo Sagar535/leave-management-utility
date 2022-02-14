@@ -1,3 +1,27 @@
+<% if local_assigns.has_key? :path %>
+  <%= content_tag :div,
+                  id: "path_data",
+                  data: path do %>
+    <% end %>
+<% else %>
+  <%= content_tag :div,
+                  id: "path_data",
+                  data: '/admin/dashboard' do %>
+  <% end %>
+<% end %>
+
+<% if local_assigns.has_key? :error %>
+  <%= content_tag :div,
+                  id: "error_data",
+                  data: error do %>
+  <% end %>
+<% elsif local_assigns.has_key? :success %>
+  <%= content_tag :div,
+                  id: "success_data",
+                  data: success do %>
+  <% end %>
+<% end %>
+
 <%= content_tag :div,
                 id: "user_data",
                 data: current_user.to_json do %>

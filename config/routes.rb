@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   }
   resources :leave_requests
   resources :users
+  post 'create_users', to: 'users#create_users'
+
   resources :salary_settings, only: %i[index show create update]
   resources :tax_rules, only: %i[index create update]
   root "home#app"

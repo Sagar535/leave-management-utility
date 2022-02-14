@@ -9,6 +9,7 @@ import Jsona from 'jsona';
 import ReactTable from '../../components/ReactTable/ReactTable';
 import apiCall from '../../helpers/apiCall';
 import NotifyUser from '../../components/Alert/NotifyUser';
+import BreadCrumbLayout from '../../components/BreadCrumbLayout/BreadCrumbLayout';
 
 export default function Dashboard(props) {
   const [events, setEvents] = useState([]);
@@ -19,6 +20,7 @@ export default function Dashboard(props) {
   const [approved, setApproved] = useState(false);
   const [rejected, setRejected] = useState(false);
   const [leaveRequestId, setLeaveRequestId] = useState(undefined);
+  const [sickLeaveBalance, setSickLeaveBalance] = useState(0);
 
   const statusColorMap = {
     pending: 'bg-info',
@@ -74,8 +76,9 @@ export default function Dashboard(props) {
       setRejected(rowInfo.original.status === 'rejected');
       setLeaveRequestId(rowInfo.original.id);
       setLeaveTitle(rowInfo.original.title);
-      setReplyId(rowInfo.original.reply.id);
-      setReply(rowInfo.original.reply.reason);
+      setReplyId(rowInfo.original.reply && rowInfo.original.reply.id);
+      setReply(rowInfo.original.reply && rowInfo.original.reply.reason);
+      setSickLeaveBalance(rowInfo.original.user.sick_leave_balance);
     },
   };
 
@@ -84,19 +87,10 @@ export default function Dashboard(props) {
       <Card className="shadow mb-0">
         <CardHeader className="border-0 text-white bg-primary pb-6 px-5">
           <Row className="pt-4">
-            <Col lg="6">
-              <h6 className="fullcalendar-title h2 text-white d-inline-block mb-0 mr-1">
-                Leave Requests
-              </h6>
-              <Nav aria-label="breadcrumb" className="d-none d-inline-block ml-lg-4">
-                <ol className="breadcrumb breadcrumb-links breadcrumb-dark" style={{backgroundColor: 'inherit'}}>
-                  <li className="breadcrumb-item"><i className="fas fa-home" /></li>
-                  <li className="breadcrumb-item active" aria-current="page">Dashboard</li>
-                  <li className="breadcrumb-item" onClick={() => props.history.push('/admin/calendar')}>Calendar</li>
-                  <li className="breadcrumb-item" onClick={() => props.history.push('/admin/admin')}>Admin</li>
-                </ol>
-              </Nav>
-            </Col>
+            <BreadCrumbLayout
+              title="Dashboard"
+              isAdmin={isAdmin()}
+            />
           </Row>
         </CardHeader>
         <CardBody className="mt--6">
@@ -219,6 +213,13 @@ export default function Dashboard(props) {
         </div>
 
         <div className="modal-body">
+          <div>
+            <Badge color={sickLeaveBalance > 0 ? 'success' : 'danger'}>
+              Sick Leave Balance:
+              {' '}
+              {sickLeaveBalance}
+            </Badge>
+          </div>
           <label className="form-control-label">Reason</label>
           <Input
             className="form-control-alternative edit-event--title"
