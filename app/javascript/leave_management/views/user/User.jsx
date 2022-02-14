@@ -118,7 +118,7 @@ export default function User(props) {
               },
               {
                 Header: 'Join Date',
-                accessor: 'join_date',
+                accessor: 'start_date',
               },
               {
                 Header: 'Leave Requests',

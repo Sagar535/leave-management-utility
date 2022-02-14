@@ -16,6 +16,7 @@ class ImportService
 
       next unless user.new_record?
 
+      user = User.new(user_params)
       raise(ActiveRecord::RecordInvalid.new(user), error_message(user)) if user.invalid?
 
       user.save!

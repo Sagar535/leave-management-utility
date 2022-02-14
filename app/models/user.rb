@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
   has_many :leave_balances, dependent: :destroy
 
-  validates :first_name, :last_name, :join_date, presence: true
+  validates :first_name, :last_name, :start_date, presence: true
   validates :email, presence: true, uniqueness: true
 
   def upcoming_leaves

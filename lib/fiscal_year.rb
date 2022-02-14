@@ -1,6 +1,6 @@
-module Fiscal
+module FiscalYear
   # start of next fiscal year
-  def next_date(fiscal_year = nil)
+  def next_fiscal_year_start_date(fiscal_year = nil)
     if fiscal_year.nil?
       today = Time.zone.today
       # 7 implies july
@@ -25,7 +25,7 @@ module Fiscal
     end
   end
 
-  module_function :next_date, :start_date
+  module_function :next_fiscal_year_start_date, :start_date
 
   def self.get_english_date(fiscal_year)
     nepali_year = fiscal_year.split("/").first.to_i

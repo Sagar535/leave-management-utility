@@ -58,7 +58,7 @@ ActiveRecord::Schema.define(version: 2022_02_14_053752) do
     t.integer "role", default: 0
     t.string "first_name"
     t.string "last_name"
-    t.date "join_date"
+    t.date "start_date"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

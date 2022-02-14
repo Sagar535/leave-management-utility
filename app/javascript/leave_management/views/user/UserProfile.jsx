@@ -56,7 +56,7 @@ export default function User(props) {
             <ListGroupItem> Email: {user.email}</ListGroupItem>
             <ListGroupItem>
               <div>
-                Join Date: {user.join_date}
+                Join Date: {user.start_date}
               </div>
             </ListGroupItem>
             <ListGroupItem>
