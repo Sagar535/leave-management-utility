@@ -1,6 +1,5 @@
 class LeaveBalanceService
-  attr_reader :user
-  attr_reader :fy
+  attr_reader :user, :fiscal_year
 
   delegate :leave_requests, :join_date, to: :user
 
@@ -9,9 +8,9 @@ class LeaveBalanceService
   SICK_LEAVE = 5
   UNPAID_LEAVE = 25
 
-  def initialize(user, fy = nil)
+  def initialize(user, fiscal_year = nil)
     @user = user
-    @fy = fy
+    @fiscal_year = fiscal_year
   end
 
   def sick_leave_balance
@@ -37,17 +36,17 @@ class LeaveBalanceService
 
   def sick_leave_duration
     relevant_leave_requests.where(status: 'approved', leave_type: 'sick_leave')
-                           .map(&:duration).reduce(0) { |spent, duration| spent + duration }
+                           .sum(&:duration)
   end
 
   def non_sick_leave_duration
     relevant_leave_requests.where(status: 'approved')
                            .where.not(leave_type: 'sick_leave')
-                           .map(&:duration).reduce(0) { |spent, duration| spent + duration }
+                           .sum(&:duration)
   end
 
   def relevant_leave_requests
-    leave_requests.where('start_date > ? and end_date < ?', Fiscal.start_date(fy), Fiscal.next_date(fy))
+    leave_requests.where('start_date > ? and end_date < ?', Fiscal.start_date(fiscal_year), Fiscal.next_date(fiscal_year))
   end
 
   def working_months

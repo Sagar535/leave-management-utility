@@ -6,7 +6,7 @@ class User < ApplicationRecord
   enum role: { user: 0, admin: 1 }
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
-  has_many :leave_balances
+  has_many :leave_balances, dependent: :destroy
 
   validates :first_name, :last_name, :join_date, presence: true
   validates :email, presence: true, uniqueness: true
@@ -19,15 +19,15 @@ class User < ApplicationRecord
     leave_requests.sum(&:duration)
   end
 
-  def sick_leave_balance(fy=nil)
-    LeaveBalanceService.new(self, fy).sick_leave_balance
+  def sick_leave_balance(fiscal_year = nil)
+    LeaveBalanceService.new(self, fiscal_year).sick_leave_balance
   end
 
-  def paid_leave_balance(fy=nil)
-    LeaveBalanceService.new(self, fy).paid_leave_balance
+  def paid_leave_balance(fiscal_year = nil)
+    LeaveBalanceService.new(self, fiscal_year).paid_leave_balance
   end
 
-  def unpaid_leave_balance(fy=nil)
-    LeaveBalanceService.new(self, fy).unpaid_leave_balance
+  def unpaid_leave_balance(fiscal_year = nil)
+    LeaveBalanceService.new(self, fiscal_year).unpaid_leave_balance
   end
 end
