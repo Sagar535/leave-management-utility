@@ -6,6 +6,7 @@ import Jsona from 'jsona';
 import apiCall from '../../helpers/apiCall';
 import ReactTable from '../../components/ReactTable/ReactTable';
 import SalarySettingForm from '../../components/Forms/SalarySettingForm';
+import {Link} from "react-router-dom";
 
 export default function SalarySettingDashboard(props) {
   const [salarySettings, setSalarySettings] = useState([]);
@@ -109,8 +110,20 @@ export default function SalarySettingDashboard(props) {
                   Header: 'To Date',
                   accessor: 'to_date',
                 },
+                {
+                 Header: 'Action',
+                 Cell: (row) => (
+                     <div>
+                         <Link>
+                             {
+                                 row.original['latest?'] ? 'Edit' : 'Uneditable'
+                             }
+                         </Link>
+                     </div>
+                 )
+                }
               ]}
-              defaultPageSize={5}
+              defaultPageSize={10}
               showPaginationBottom
               className="-striped -highlight text-capitalize"
               getTrProps={onRowClick}
