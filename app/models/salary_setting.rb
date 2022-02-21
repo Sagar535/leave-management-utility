@@ -15,6 +15,17 @@ class SalarySetting < ApplicationRecord
     from_date.present? && from_date >= SalarySetting.pluck(:from_date).compact.max
   end
 
+  def self.active(date = nil)
+    # return latest whern date is blank
+    return where.not(from_date: nil).order(from_date: :desc).first if date.blank?
+
+    where.not(from_date: nil).where('from_date <= ?', date).order(from_date: :desc).first
+  end
+
+  def tax_rule(salary)
+    tax_rules.where('amount_from < ? and amount_to > ?', salary, salary)
+  end
+
   private
 
   def date_consistency
