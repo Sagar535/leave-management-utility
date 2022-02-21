@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_14_053752) do
+ActiveRecord::Schema.define(version: 2022_02_18_081356) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,18 +37,6 @@ ActiveRecord::Schema.define(version: 2022_02_14_053752) do
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
-  create_table "leave_balances", force: :cascade do |t|
-    t.bigint "user_id"
-    t.integer "sick_leave"
-    t.integer "paid_leave"
-    t.integer "unpaid_leave"
-    t.string "fiscal_year"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["fiscal_year", "user_id"], name: "index_leave_balances_on_fiscal_year_and_user_id", unique: true
-    t.index ["user_id"], name: "index_leave_balances_on_user_id"
-  end
-
   create_table "leave_requests", force: :cascade do |t|
     t.string "title"
     t.date "start_date"
@@ -70,18 +58,34 @@ ActiveRecord::Schema.define(version: 2022_02_14_053752) do
   end
 
   create_table "salaries", force: :cascade do |t|
-    t.bigint "user_id"
-    t.boolean "ssf_enrolled"
-    t.boolean "life_ensured"
     t.decimal "basic_salary"
     t.decimal "commitment_bonus"
-    t.date "from_date"
-    t.date "to_date"
-    t.boolean "active"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["user_id", "active"], name: "index_salaries_on_user_id_and_active", unique: true, where: "active"
-    t.index ["user_id"], name: "index_salaries_on_user_id"
+    t.decimal "festival_bonus"
+    t.decimal "allowance"
+    t.decimal "life_insurance_deduction"
+    t.decimal "income_tax"
+    t.decimal "net_ctc"
+    t.decimal "cash_in_hand"
+    t.decimal "monthly_dispatch"
+  end
+
+  create_table "salary_records", force: :cascade do |t|
+    t.bigint "user_id"
+    t.decimal "allowance"
+    t.decimal "ssf_office"
+    t.decimal "ssf_employee"
+    t.decimal "festival_bonus"
+    t.decimal "life_insurance_deduction"
+    t.decimal "income_tax"
+    t.decimal "net_ctc"
+    t.decimal "cash_in_hand"
+    t.decimal "monthly_dispatch"
+    t.date "date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_salary_records_on_user_id"
   end
 
   create_table "salary_settings", force: :cascade do |t|
@@ -105,6 +109,16 @@ ActiveRecord::Schema.define(version: 2022_02_14_053752) do
     t.decimal "amount_to"
     t.decimal "rate"
     t.index ["salary_setting_id"], name: "index_tax_rules_on_salary_setting_id"
+  end
+
+  create_table "user_salaries", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "salary_id"
+    t.date "start_date"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["salary_id"], name: "index_user_salaries_on_salary_id"
+    t.index ["user_id"], name: "index_user_salaries_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|

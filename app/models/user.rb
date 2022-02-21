@@ -7,9 +7,11 @@ class User < ApplicationRecord
   belongs_to :salary_setting
   has_many :leave_requests
   has_many :approved_leave_requests, class_name: 'LeaveRequest', foreign_key: :approver_id, dependent: :nullify, inverse_of: :approver
-  has_many :salaries, dependent: :destroy
-  has_one :active_salary, -> { where(active: true) }, class_name: 'Salary', dependent: :destroy, inverse_of: :user
+
+  has_many :user_salaries
+  has_many :salaries, through: :user_salaries
   has_many :leave_balances, dependent: :destroy
+  has_many :salary_records, dependent: :nullify
 
   validates :first_name, :last_name, :start_date, presence: true
   validates :email, presence: true, uniqueness: true
@@ -32,5 +34,14 @@ class User < ApplicationRecord
 
   def unpaid_leave_balance(fiscal_year = nil)
     LeaveBalanceService.new(self, fiscal_year).unpaid_leave_balance
+  end
+
+  # TODO: test is required
+  def active_salary(date=nil)
+    # return latest when date is not given
+    return user_salaries.order(start_date: :desc).first&.salary if date.blank?
+
+    # active salary for a given date
+    user_salaries.where('start_date <= ?', date).order(start_date: :desc).first&.salary
   end
 end
